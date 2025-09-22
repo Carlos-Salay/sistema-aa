@@ -1,0 +1,1067 @@
+/* client/src/App.css - Diseño Profesional Verde AA (Versión Unificada) */
+
+/* 1. Variables de Color y Tipografía */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+  --bg-dark: #121212;
+  --bg-surface: #1E1E1E;
+  --bg-surface-light: #2C2C2C;
+  --text-primary: #FFFFFF;
+  --text-secondary: #B0B0B0;
+  --primary-green: #006A4E;
+  --primary-green-hover: #008763;
+  --border-color: #333333;
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  --error-color: #dc3545;
+  --success-color: #28a745;
+}
+
+/* 2. Estilos Globales */
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+/* 3. Layout Principal y Barra de Navegación */
+.top-navbar {
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
+  padding: 10px 40px;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.navbar-logo {
+  height: 55px;
+  width: auto;
+}
+
+.navbar-title-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.app-slogan {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  font-style: italic;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 15px;
+}
+
+.nav-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  font-weight: 500;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 50%;
+  background-color: var(--primary-green);
+  transition: all 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: var(--text-primary);
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+  width: 100%;
+  left: 0;
+}
+
+.nav-links a.active {
+  color: var(--primary-green);
+  font-weight: bold;
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.user-name {
+  font-weight: bold;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.user-role {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.nav-link-icon {
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  transition: color 0.3s ease;
+}
+
+.nav-link-icon:hover {
+  color: var(--primary-green);
+}
+
+.logout-button {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 5px;
+  transition: color 0.3s ease;
+}
+
+.logout-button:hover {
+  color: var(--error-color);
+}
+
+/* 4. Contenido Principal y Contenedores */
+.main-content {
+  flex-grow: 1;
+  width: 100%;
+  padding: 40px 0;
+  box-sizing: border-box;
+}
+
+.page-content-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 40px;
+  box-sizing: border-box;
+}
+
+.content-section {
+  background-color: var(--bg-surface);
+  border-radius: 8px;
+  padding: 30px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  margin-bottom: 30px;
+}
+
+/* 5. Estilos de Títulos y Logos de Página */
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 30px;
+  border-bottom: 2px solid var(--primary-green);
+  padding-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.page-logo-icon {
+  font-size: 2.2rem;
+  color: var(--primary-green);
+  margin-right: 10px;
+}
+
+/* 6. Dashboard y Tarjetas */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 25px;
+  box-shadow: 0 4px 12px var(--shadow-color);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px var(--shadow-color);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.card-icon {
+  font-size: 1.8rem;
+  color: var(--primary-green);
+}
+
+.card-body {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.card-value {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.card-footer {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+/* 7. Formularios, Tablas y Botones */
+input, button, select, textarea {
+  font-size: 1rem;
+  padding: 12px;
+  margin: 5px 0 15px 0;
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  box-sizing: border-box; /* Importante para consistencia de tamaño */
+  width: 100%;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 3px rgba(0, 106, 78, 0.5);
+}
+
+button {
+  cursor: pointer;
+  background-color: var(--primary-green);
+  font-weight: bold;
+  border: none;
+  transition: background-color 0.2s ease-in-out;
+}
+
+button:hover {
+  background-color: var(--primary-green-hover);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+}
+
+th {
+  background-color: var(--bg-surface-light);
+  font-weight: bold;
+}
+
+tbody tr:hover {
+  background-color: var(--bg-surface-light);
+}
+
+/* 8. Estilos para la Página de Login */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 75px); /* Altura de la ventana menos la navbar */
+  padding: 20px;
+}
+
+.login-card {
+  background-color: var(--bg-surface);
+  border-radius: 8px;
+  padding: 40px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.login-logo {
+  width: 100px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.login-title {
+  color: var(--text-primary);
+  text-shadow: 0 0 8px var(--primary-green), 0 0 15px rgba(0, 106, 78, 0.6);
+  transition: text-shadow 0.3s ease-in-out;
+  font-size: 1.8rem;
+  margin-top: 0;
+  margin-bottom: 30px;
+}
+
+.login-title:hover {
+  text-shadow: 0 0 12px var(--primary-green), 0 0 25px rgba(0, 106, 78, 0.8);
+}
+
+.login-card .form-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 15px;
+}
+
+.login-card .form-group label {
+  flex-basis: 120px;
+  flex-shrink: 0;
+  text-align: right;
+  margin-bottom: 0;
+}
+
+/* Corrección para autocompletado del navegador */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--text-primary) !important;
+    box-shadow: 0 0 0 30px var(--bg-dark) inset !important;
+}
+
+/* 9. Estilos para la Página de Registro */
+.registration-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.registration-card {
+  background-color: var(--bg-surface);
+  border-radius: 8px;
+  padding: 40px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  width: 100%;
+  max-width: 800px;
+  text-align: center;
+}
+
+.registration-logo {
+  width: 100px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.registration-title {
+  font-size: 1.8rem;
+  margin-top: 0;
+  margin-bottom: 30px;
+  color: var(--text-primary);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 30px;
+  margin-bottom: 30px;
+}
+
+.registration-card .form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  margin-bottom: 0;
+}
+
+.submit-button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 15px;
+  font-size: 1.1rem;
+}
+
+/* 10. Estilos de Notificaciones y Modales */
+.message-success, .message-error {
+  margin-top: 25px;
+  padding: 15px;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: 500;
+  border: 1px solid;
+}
+
+.message-success {
+  background-color: rgba(0, 106, 78, 0.2);
+  color: var(--primary-green);
+  border-color: var(--primary-green);
+}
+
+.message-error {
+  background-color: rgba(255, 77, 77, 0.2);
+  color: #ff4d4d;
+  border-color: #ff4d4d;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modal-content {
+  background-color: var(--bg-surface);
+  padding: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 5px 20px var(--shadow-color);
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.modal-title {
+  color: var(--primary-green);
+  font-size: 1.8rem;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+
+/* --- Ajustes para Formularios dentro de .content-section (Sesiones, etc.) --- */
+
+.content-section form {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Esto centrará el botón y los grupos de formulario */
+}
+
+/* Damos un ancho máximo a cada grupo de label + input */
+.content-section .form-group {
+  width: 100%;
+  max-width: 500px; /* Ancho estándar para los campos */
+  margin-bottom: 20px;
+}
+
+/* Nos aseguramos que el label siga a la izquierda */
+.content-section .form-group label {
+  text-align: left;
+}
+
+/* Hacemos que el botón tenga un tamaño estándar en lugar de 100% */
+.content-section button {
+  width: auto;
+  min-width: 250px; /* Ancho mínimo para el botón */
+}
+
+
+/* --- Estilos para la Página de Mensajería --- */
+.chat-container {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  margin: 0 auto;
+  height: 70vh; /* Altura del chat */
+}
+
+.chat-header {
+  background-color: var(--bg-surface-light);
+  padding: 15px;
+  text-align: center;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.chat-header h3 {
+  margin: 0;
+  font-weight: 500;
+}
+
+.chat-messages {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.message {
+  padding: 10px 15px;
+  border-radius: 18px;
+  max-width: 70%;
+  line-height: 1.4;
+}
+
+.message p {
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.message span {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  display: block;
+  text-align: right;
+  margin-top: 5px;
+}
+
+.message.sent {
+  background-color: var(--primary-green);
+  align-self: flex-end; /* Alinea a la derecha */
+  border-bottom-right-radius: 4px;
+}
+
+.message.received {
+  background-color: var(--bg-surface-light);
+  align-self: flex-start; /* Alinea a la izquierda */
+  border-bottom-left-radius: 4px;
+}
+
+.chat-input-form {
+  display: flex;
+  padding: 15px;
+  background-color: var(--bg-surface-light);
+  border-top: 1px solid var(--border-color);
+}
+
+.chat-input-form input {
+  flex-grow: 1;
+  margin: 0;
+}
+
+.chat-input-form button {
+  margin: 0 0 0 10px;
+  width: auto;
+}
+
+
+/* --- Estilos Mejorados para la Tabla de Asistencia --- */
+
+.asistencia-table {
+  border-radius: 8px; /* Redondea las esquinas de la tabla */
+  overflow: hidden; /* Oculta lo que se salga de los bordes redondeados */
+  border: 1px solid var(--border-color);
+}
+
+.asistencia-table tbody tr {
+  transition: background-color 0.3s ease; /* Transición suave de color */
+}
+
+/* --- ESTILO PARA LA FILA CUANDO EL CHECKBOX ESTÁ MARCADO --- */
+.asistencia-table tbody tr.fila-marcada {
+  background-color: rgba(0, 106, 78, 0.2); /* Verde semitransparente */
+}
+
+.asistencia-table tbody tr.fila-marcada td {
+  font-weight: bold; /* Opcional: texto en negrita al marcar */
+  color: var(--text-primary);
+}
+
+/* --- ESTILOS PARA EL CHECKBOX --- */
+.checkbox-cell {
+  text-align: center;
+}
+
+.asistencia-checkbox {
+  transform: scale(1.2); /* Hace el checkbox más grande y fácil de clickear */
+  accent-color: var(--primary-green); /* Pone el check de color verde */
+  margin: 0;
+}
+
+
+
+.submit-button-asistencia {
+  width: 100%;
+  max-width: 500px;
+  margin: 30px auto 0 auto;
+  display: block;
+}
+
+
+
+/* --- Estilos para el Perfil del Miembro --- */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  margin-bottom: 40px;
+  background-color: var(--bg-surface);
+  padding: 25px;
+  border-radius: 8px;
+}
+.profile-icon {
+  font-size: 6rem;
+  color: var(--primary-green);
+}
+.profile-info {
+  text-align: left;
+}
+.profile-alias {
+  margin: 0;
+  font-size: 2.8rem;
+  font-weight: 700;
+}
+.profile-code {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+
+
+/* --- Estilos para la Bitácora del Miembro --- */
+
+.bitacora-entry {
+  background-color: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--primary-green);
+  padding: 15px 20px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+}
+
+.bitacora-entry p {
+  margin: 0 0 10px 0;
+  color: var(--text-primary);
+  white-space: pre-wrap; /* Respeta los saltos de línea y espacios */
+}
+
+.bitacora-entry small {
+  display: block;
+  text-align: right;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+
+
+
+/* --- Estilos para la Bandeja de Entrada de Mensajes --- */
+
+.conversation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.conversation-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background-color: var(--bg-surface-light);
+  padding: 15px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  border-left: 4px solid transparent;
+}
+
+.conversation-item:hover {
+  background-color: var(--bg-surface-light);
+  transform: translateX(5px);
+  border-left-color: var(--primary-green);
+}
+
+.conversation-icon {
+  font-size: 2rem;
+  color: var(--text-secondary);
+}
+
+.conversation-item:hover .conversation-icon {
+  color: var(--primary-green);
+}
+
+.conversation-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.conversation-alias {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.conversation-code {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+
+
+
+/* --- Estilos para el Calendario Personalizado (Versión Final) --- */
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  margin-bottom: 20px;
+}
+
+.month-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin: 0;
+  flex-grow: 1;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.calendar-header .nav-button, .calendar-header .today-button {
+  background-color: var(--bg-surface-light);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 8px 12px;
+  margin: 0 5px;
+  width: auto;
+}
+
+.calendar-header .today-button {
+  background-color: var(--primary-green);
+}
+.calendar-header .today-button:hover {
+  background-color: var(--primary-green-hover);
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  font-weight: bold;
+  text-align: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 10px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.calendar-day {
+  background-color: var(--bg-surface-light);
+  min-height: 110px; /* Celdas un poco más bajas */
+  padding: 8px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid transparent;
+}
+
+.calendar-day.empty {
+  background-color: transparent;
+}
+
+/* CORRECCIÓN: Estilo para resaltar el día de hoy */
+.calendar-day.today .day-number {
+  background-color: var(--primary-green);
+  color: white;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  float: right; /* Alinea el círculo a la derecha */
+}
+
+.day-number {
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.sessions-container {
+  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.session-event {
+  background-color: var(--primary-green);
+  color: var(--text-primary);
+  padding: 5px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.session-event:hover {
+  background-color: var(--primary-green-hover);
+}
+
+
+
+/* --- Estilos para el Muro de Testimonios --- */
+.testimonios-list {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+.testimonio-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-left: 5px solid var(--primary-green);
+  padding: 25px;
+  border-radius: 8px;
+}
+.testimonio-card h3 {
+  margin-top: 0;
+  font-size: 1.5rem;
+}
+.testimonio-autor {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-top: -15px;
+  margin-bottom: 20px;
+}
+.testimonio-contenido {
+  white-space: pre-wrap; /* Respeta saltos de línea y espacios */
+}
+
+.reaction-bar {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  gap: 15px;
+}
+
+.reaction-button {
+  background: var(--bg-surface-light);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  width: auto;
+  border-radius: 20px; /* Bordes redondeados como píldora */
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reaction-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+/* --- COLORES Y ESTILOS PARA BOTONES ACTIVOS --- */
+.reaction-button.apoyo.active {
+  background-color: #2980b9; /* Azul de apoyo */
+  color: white;
+  border-color: #2980b9;
+}
+.reaction-button.inspiracion.active {
+  background-color: #f1c40f; /* Amarillo de inspiración */
+  color: #333;
+  border-color: #f1c40f;
+}
+.reaction-button.gratitud.active {
+  background-color: #e74c3c; /* Rojo de gratitud */
+  color: white;
+  border-color: #e74c3c;
+}
+
+
+/* --- Estilos para la Tabla de Miembros --- */
+
+/* 1. Días de sobriedad: texto más pequeño y destacado */
+.dias-sobriedad {
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+/* 4. Botón de contraseña */
+.password-button {
+  background-color: #007bff;
+  color: white;
+}
+.password-button:hover {
+  background-color: #0056b3;
+}
+
+/* 5. Botón de baja */
+.baja-button {
+  background-color: var(--error-color, #dc3545);
+  color: white;
+}
+.baja-button:hover {
+  background-color: #c82333;
+}
+
+/* 6. Botón de alta (activar miembro) */
+.alta-button {
+  background-color: var(--success-color, #28a745);
+  color: white;
+}
+.alta-button:hover {
+  background-color: #218838;
+}
+
+/* 7. Botón de recaída */
+.recaida-button {
+  background-color: #ffc107;
+  color: #1E1E1E;
+}
+.recaida-button:hover {
+  background-color: #e0a800;
+}
+
+/* 8. Botón de confirmación dentro de modal */
+.baja-button-confirm {
+  background-color: var(--error-color, #dc3545) !important;
+  color: white;
+}
+.baja-button-confirm:hover {
+  background-color: #c82333 !important;
+}
+
+/* 9. Toggle de vista (opcional, si aplicas filtros o tabs) */
+.view-toggle {
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.view-toggle button {
+  padding: 6px 12px;
+  background-color: var(--bg-surface-light, #f0f0f0);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border: none;
+}
+.view-toggle button.active {
+  background-color: var(--primary-green, #28a745);
+  color: white;
+}
+
+/* Contenedor para filtros y buscador en tablas */
+.table-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* Estilo para el input de búsqueda */
+.search-input {
+  width: 300px;
+  margin: 0; /* Resetea el margen por defecto del input */
+  padding: 8px 12px; /* Un poco menos de padding que los inputs de formulario */
+}
+
+/* Ajuste para que el toggle no ocupe todo el espacio */
+.view-toggle {
+    margin-bottom: 0;
+}
+
+
+
+
+
+/* --- Estilos para el Muro de Testimonios (Añadidos) --- */
+.testimonio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.testimonio-header h3 {
+  margin-top: 0;
+  font-size: 1.5rem;
+}
+.delete-testimonio-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 5px;
+}
+.delete-testimonio-btn:hover {
+  color: var(--error-color);
+}
