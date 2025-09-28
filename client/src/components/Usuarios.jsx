@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaUserShield, FaUser, FaEnvelope, FaLock, FaCheckCircle, FaTimesCircle, FaChevronDown } from 'react-icons/fa';
+import { useAuth } from '../context/AuthContext.jsx';
 import loginImage from '../logos/registro.png';
 
 // Requisitos de contraseña
@@ -10,6 +11,7 @@ const passwordRequirements = [
 ];
 
 function Usuarios() {
+  const { token } = useAuth();
   const [roles, setRoles] = useState([]);
   const [formData, setFormData] = useState({
     nombre_completo: '',
@@ -72,7 +74,10 @@ function Usuarios() {
     try {
       const response = await fetch('http://localhost:4000/api/usuarios', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ ...formData, id_rol: idRolSeleccionado }),
       });
       const data = await response.json();

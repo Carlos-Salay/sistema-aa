@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
-import { FaUsers, FaAward, FaKey, FaUserSlash, FaUserCheck, FaExclamationTriangle, FaUserFriends, FaChevronDown, FaLock, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { FaUsers, FaAward, FaKey, FaUserSlash, FaUserCheck, FaExclamationTriangle, FaUserFriends, FaChevronDown, FaLock, FaCheckCircle, FaTimesCircle, FaPlus, FaUser, FaCalendarAlt } from 'react-icons/fa';
 import Modal from './Modal.jsx';
 
 // Requisitos de la contraseña (para el modal)
@@ -19,13 +19,14 @@ const nombrePasos = {
 };
 
 function Miembros() {
-  const { user } = useAuth();
+  const { user, token } = useAuth(); // 1. Obtenemos el token del contexto
   const [miembros, setMiembros] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [viendoInactivos, setViendoInactivos] = useState(false);
   
   const [modalPadrino, setModalPadrino] = useState({ isOpen: false, miembro: null, padrinoId: '' });
+  const [modalCrear, setModalCrear] = useState({ isOpen: false, alias: '', fecha_ingreso: '', fecha_sobriedad: '', password: '', confirmPassword: '' });
   const [modalPassword, setModalPassword] = useState({ isOpen: false, miembro: null, newPassword: '', confirmPassword: '' });
   const [modalBaja, setModalBaja] = useState({ isOpen: false, miembro: null, activar: false });
   const [modalRecaida, setModalRecaida] = useState({ isOpen: false, miembro: null });
@@ -37,12 +38,12 @@ function Miembros() {
 
   // useEffect para validar la nueva contraseña en tiempo real
   useEffect(() => {
-    if (modalPassword.isOpen) {
+    if (modalPassword.isOpen || modalCrear.isOpen) {
       setPasswordValidation(
-        passwordRequirements.map(req => ({ ...req, valid: req.regex.test(modalPassword.newPassword) }))
+        passwordRequirements.map(req => ({ ...req, valid: req.regex.test(modalPassword.newPassword || modalCrear.password) }))
       );
     }
-  }, [modalPassword.newPassword, modalPassword.isOpen]);
+  }, [modalPassword.newPassword, modalPassword.isOpen, modalCrear.password, modalCrear.isOpen]);
 
   // --- LÓGICA FUNCIONAL ---
   const fetchMiembros = async () => {
@@ -67,6 +68,41 @@ function Miembros() {
       if (!res.ok) throw new Error('No se pudo guardar el paso.');
       setMiembros(m => m.map(mi => mi.id_miembro === miembroId ? { ...mi, paso_actual: nuevoPaso } : mi));
     } catch (err) { alert(err.message); }
+  };
+
+  const handleCrearMiembro = async (e) => {
+    e.preventDefault();
+    const { alias, fecha_ingreso, fecha_sobriedad, password, confirmPassword } = modalCrear;
+    const isPasswordValid = passwordValidation.every(req => req.valid);
+
+    if (password !== confirmPassword) {
+      return setConfirmationModal({ isOpen: true, title: 'Error', message: 'Las contraseñas no coinciden.' });
+    }
+    if (!isPasswordValid) {
+      return setConfirmationModal({ isOpen: true, title: 'Contraseña Débil', message: 'La contraseña no cumple los requisitos de seguridad.' });
+    }
+
+    try {
+      const res = await fetch(`http://localhost:4000/api/miembros`, {
+        method: 'POST',
+        headers: { // 2. Añadimos el token a las cabeceras
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ alias, fecha_ingreso, fecha_sobriedad, password }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'No se pudo crear el miembro.');
+      }
+
+      setModalCrear({ isOpen: false, alias: '', fecha_ingreso: '', fecha_sobriedad: '', password: '', confirmPassword: '' });
+      setConfirmationModal({ isOpen: true, title: 'Éxito', message: 'Nuevo miembro registrado correctamente.' });
+      fetchMiembros(); // Recargamos la lista
+    } catch (err) {
+      setConfirmationModal({ isOpen: true, title: 'Error', message: err.message });
+    }
   };
   
   const handleCambiarPassword = async (e) => {
@@ -143,6 +179,9 @@ function Miembros() {
             <button onClick={() => setViendoInactivos(false)} className={!viendoInactivos ? 'active' : ''}><span>Activos</span></button>
             <button onClick={() => setViendoInactivos(true)} className={viendoInactivos ? 'active' : ''}><span>Inactivos</span></button>
           </div>
+          <button onClick={() => setModalCrear({ isOpen: true, alias: '', fecha_ingreso: '', fecha_sobriedad: '', password: '', confirmPassword: '' })} className="add-button">
+            <FaPlus /> <span>Agregar Miembro</span>
+          </button>
         </div>
         <div className="table-responsive">
           <table className="miembros-table">
@@ -189,6 +228,50 @@ function Miembros() {
       </div>
       
       {/* --- Modales --- */}
+      <Modal
+        isOpen={modalCrear.isOpen}
+        onClose={() => setModalCrear({ isOpen: false })}
+        title="Registrar Nuevo Miembro"
+      >
+        <form onSubmit={handleCrearMiembro} className="modal-form">
+          <div className="input-group">
+            <FaUser className="input-icon" />
+            <input type="text" placeholder="Alias del miembro" value={modalCrear.alias} onChange={e => setModalCrear(m => ({...m, alias: e.target.value}))} required />
+          </div>
+          <div className="input-group">
+            <FaCalendarAlt className="input-icon" />
+            <input type="date" title="Fecha de Ingreso" value={modalCrear.fecha_ingreso} onChange={e => setModalCrear(m => ({...m, fecha_ingreso: e.target.value}))} required />
+          </div>
+          <div className="input-group">
+            <FaCalendarAlt className="input-icon" />
+            <input type="date" title="Fecha de Sobriedad" value={modalCrear.fecha_sobriedad} onChange={e => setModalCrear(m => ({...m, fecha_sobriedad: e.target.value}))} required />
+          </div>
+          <div className="input-group">
+            <FaLock className="input-icon" />
+            <input type="password" placeholder="Contraseña" value={modalCrear.password} onChange={e => setModalCrear(m => ({...m, password: e.target.value}))} onFocus={() => setIsPasswordFocused(true)} required />
+          </div>
+          {isPasswordFocused && (
+            <div className="password-requirements-registro">
+              {passwordValidation.map(req => (
+                <div key={req.id} className={`requirement ${req.valid ? 'valid' : ''}`}>
+                  {req.valid ? <FaCheckCircle/> : <FaTimesCircle/>}
+                  <span>{req.text}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="input-group">
+            <FaLock className="input-icon" />
+            <input type="password" placeholder="Confirmar Contraseña" value={modalCrear.confirmPassword} onChange={e => setModalCrear(m => ({...m, confirmPassword: e.target.value}))} required />
+          </div>
+          <div className="modal-actions">
+            <button type="button" onClick={() => setModalCrear({ isOpen: false })} className="button-secondary"><span>Cancelar</span></button>
+            <button type="submit"><span>Registrar Miembro</span></button>
+          </div>
+        </form>
+      </Modal>
+
+
       <Modal 
         isOpen={modalPassword.isOpen} 
         onClose={() => setModalPassword({ isOpen: false, miembro: null })}
