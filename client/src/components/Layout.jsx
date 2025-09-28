@@ -1,55 +1,82 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useEffect, useRef } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import { FaUserShield, FaSignOutAlt } from 'react-icons/fa';
+import { useTheme } from '../context/ThemeContext.jsx';
+import { FaUserShield, FaSignOutAlt, FaSun, FaMoon } from 'react-icons/fa';
 import logo from '../logos/logo-aa.png';
 
 function Layout({ children }) {
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
 
+  // --- LÓGICA PARA EL CIERRE DE SESIÓN POR INACTIVIDAD ---
+  const idleTimeout = useRef(null);
+  const IDLE_TIME_MS = 3 * 60 * 1000; // 3 minutos
+
+  const resetIdleTimer = () => {
+    clearTimeout(idleTimeout.current);
+    idleTimeout.current = setTimeout(() => {
+      logout();
+      navigate('/login'); // Opcional: redirigir al login
+      alert('Tu sesión se ha cerrado por inactividad.');
+    }, IDLE_TIME_MS);
+  };
+
+  useEffect(() => {
+    const events = ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart'];
+    
+    // Iniciar el temporizador cuando el componente se monta
+    resetIdleTimer();
+    
+    // Añadir listeners para reiniciar el temporizador con la actividad del usuario
+    events.forEach(event => window.addEventListener(event, resetIdleTimer));
+
+    // Limpiar listeners y el temporizador cuando el componente se desmonte
+    return () => {
+      clearTimeout(idleTimeout.current);
+      events.forEach(event => window.removeEventListener(event, resetIdleTimer));
+    };
+  }, [logout, navigate]); // Dependencias del efecto
+  
   return (
     <div className="app-layout">
       <header className="top-navbar">
-        <div className="navbar-content">
+        {/* Fila Superior: Logo y Controles de Usuario */}
+        <div className="top-bar">
           <div className="navbar-brand">
-            <img src={logo} alt="ClaraVía AA Logo" className="navbar-logo" />
-            <div className="navbar-title-group">
-              <h2 className="navbar-title">ClaraVía</h2>
-              <p className="app-slogan">Camino claro, en alusión a la claridad y guía en el proceso.</p>
-            </div>
+            <img src={logo} alt="ClaraVía Logo" className="navbar-logo" />
+            <h2 className="navbar-title">ClaraVía</h2>
           </div>
-          <nav>
-            <ul className="nav-links">
-              <li><NavLink to="/" className={({ isActive }) => (isActive ? 'active' : '')}>Dashboard</NavLink></li>
-              <li><NavLink to="/registro" className={({ isActive }) => (isActive ? 'active' : '')}>Registro</NavLink></li>
-              <li><NavLink to="/miembros" className={({ isActive }) => (isActive ? 'active' : '')}>Miembros</NavLink></li>
-              <li><NavLink to="/sesiones" className={({ isActive }) => (isActive ? 'active' : '')}>Sesiones</NavLink></li>
-              <li><NavLink to="/calendario" className={({ isActive }) => (isActive ? 'active' : '')}>Calendario</NavLink></li>
-              {/* EL ENLACE A BITÁCORA HA SIDO ELIMINADO DE AQUÍ */}
-              <li><NavLink to="/testimonios" className={({ isActive }) => (isActive ? 'active' : '')}>Testimonios</NavLink></li>
-              {user && user.rol === 'Administrador' && (
-                <li><NavLink to="/reportes" className={({ isActive }) => (isActive ? 'active' : '')}>Reportes</NavLink></li>
-              )}
-            </ul>
-          </nav>
           <div className="navbar-user">
-            {user && (
-              <>
-                <div className="user-info">
-                  <span className="user-name">{user.nombre}</span>
-                  <span className="user-role">{user.rol}</span>
-                </div>
-                {user.rol === 'Administrador' && (
-                  <NavLink to="/usuarios" className="nav-link-icon" title="Gestionar Usuarios">
-                    <FaUserShield />
-                  </NavLink>
-                )}
-                <button onClick={logout} className="logout-button" title="Cerrar Sesión">
-                  <FaSignOutAlt />
-                </button>
-              </>
+            <button onClick={toggleTheme} className="theme-toggle-button" title="Cambiar tema">
+              {theme === 'light' ? <FaMoon /> : <FaSun />}
+            </button>
+            <div className="user-info">
+              <span className="user-name">{user.alias}</span>
+              <span className="user-role">{user.rol}</span>
+            </div>
+            {user.rol === 'Administrador' && (
+              <NavLink to="/usuarios" className="nav-icon-button" title="Gestionar Usuarios">
+                <FaUserShield />
+              </NavLink>
             )}
+            <button onClick={logout} className="logout-button" title="Cerrar Sesión">
+              <FaSignOutAlt />
+            </button>
           </div>
+        </div>
+        {/* Fila Inferior: Enlaces de Navegación */}
+        <div className="bottom-bar">
+          <nav className="nav-links">
+            <NavLink to="/">Dashboard</NavLink>
+            <NavLink to="/registro">Registro</NavLink>
+            <NavLink to="/miembros">Miembros</NavLink>
+            <NavLink to="/sesiones">Sesiones</NavLink>
+            <NavLink to="/calendario">Calendario</NavLink>
+            <NavLink to="/testimonios">Testimonios</NavLink>
+            {user.rol === 'Administrador' && <NavLink to="/reportes">Reportes</NavLink>}
+          </nav>
         </div>
       </header>
       <main className="main-content">
@@ -60,5 +87,4 @@ function Layout({ children }) {
     </div>
   );
 }
-
 export default Layout;

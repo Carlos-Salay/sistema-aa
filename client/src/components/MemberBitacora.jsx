@@ -1,7 +1,6 @@
-// client/src/components/MemberBitacora.jsx
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
-import { FaBookMedical } from 'react-icons/fa';
+import { FaBookMedical, FaFeatherAlt } from 'react-icons/fa';
 
 function MemberBitacora() {
   const { user } = useAuth();
@@ -10,7 +9,7 @@ function MemberBitacora() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Carga las entradas de la bitácora del miembro logueado
+  // --- LÓGICA DE DATOS (sin cambios) ---
   useEffect(() => {
     if (!user) return;
     const fetchEntradas = async () => {
@@ -28,22 +27,16 @@ function MemberBitacora() {
     fetchEntradas();
   }, [user]);
 
-  // Guarda una nueva entrada
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!nuevaEntrada.trim()) return;
-
     try {
       const response = await fetch('http://localhost:4000/api/bitacora', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id_miembro: user.id,
-          reflexion: nuevaEntrada,
-        }),
+        body: JSON.stringify({ id_miembro: user.id, reflexion: nuevaEntrada }),
       });
       if (!response.ok) throw new Error('Error al guardar la entrada.');
-      
       const nuevaEntradaGuardada = await response.json();
       setEntradas([nuevaEntradaGuardada, ...entradas]);
       setNuevaEntrada('');
@@ -57,35 +50,41 @@ function MemberBitacora() {
       <h1 className="page-title"><FaBookMedical className="page-logo-icon" /> Mi Bitácora Personal</h1>
       
       <div className="content-section">
-        <h2>Nueva Entrada</h2>
+        <h2 className="section-title"><FaFeatherAlt /> Nueva Entrada</h2>
         <form onSubmit={handleSubmit}>
-          <textarea
-            rows="6"
-            placeholder="Escribe aquí tus reflexiones del día, tus logros o tus desafíos..."
-            value={nuevaEntrada}
-            onChange={(e) => setNuevaEntrada(e.target.value)}
-            required
-          ></textarea>
-          <button type="submit" style={{maxWidth: '300px', alignSelf: 'center'}}>Guardar Reflexión</button>
+          <div className="form-group">
+            <textarea
+              rows="6"
+              placeholder="Escribe aquí tus reflexiones del día, tus logros o tus desafíos..."
+              value={nuevaEntrada}
+              onChange={(e) => setNuevaEntrada(e.target.value)}
+              required
+            ></textarea>
+          </div>
+          <div className="form-actions">
+            <button type="submit"><span>Guardar Reflexión</span></button>
+          </div>
         </form>
       </div>
 
-      <div className="content-section" style={{marginTop: '30px'}}>
-        <h2>Mis Entradas Anteriores</h2>
-        {loading ? <p>Cargando...</p> : (
-          entradas.length > 0 ? (
-            entradas.map(entrada => (
+      <div className="content-section">
+        <h2 className="section-title">Mis Entradas Anteriores</h2>
+        {loading && <p>Cargando...</p>}
+        {error && <p className="message-error">{error}</p>}
+        
+        {!loading && entradas.length > 0 ? (
+          <div className="bitacora-list">
+            {entradas.map(entrada => (
               <div key={entrada.id_bitacora} className="bitacora-entry">
                 <p>{entrada.reflexion}</p>
                 <small>{new Date(entrada.fecha_registro).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</small>
               </div>
-            ))
-          ) : (
-            <p>Aún no tienes entradas en tu bitácora. ¡Anímate a escribir la primera!</p>
-          )
+            ))}
+          </div>
+        ) : (
+          !loading && <p>Aún no tienes entradas en tu bitácora. ¡Anímate a escribir la primera!</p>
         )}
       </div>
-      {error && <p className="message-error">{error}</p>}
     </div>
   );
 }

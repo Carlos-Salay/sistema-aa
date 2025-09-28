@@ -4,10 +4,9 @@ const { pool } = require('../db');
 
 const router = Router();
 
-// RUTA PARA OBTENER TODAS LAS SESIONES (AHORA DEVUELVE TODOS LOS DATOS)
+// RUTA PARA OBTENER TODAS LAS SESIONES
 router.get('/', async (req, res) => {
   try {
-    // Unimos la tabla de sesiones con la de ubicaciones para obtener el nombre
     const query = `
       SELECT s.id_sesion, s.tema, s.descripcion, u.nombre AS ubicacion, s.fecha_hora 
       FROM sesiones s
@@ -22,9 +21,23 @@ router.get('/', async (req, res) => {
   }
 });
 
-// RUTA MODIFICADA PARA CREAR UNA NUEVA SESIÓN
+// --- RUTA CORREGIDA Y AÑADIDA PARA OBTENER UNA SESIÓN POR SU ID ---
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query('SELECT * FROM sesiones WHERE id_sesion = $1', [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Sesión no encontrada.' });
+    }
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error al obtener la sesión:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+});
+
+// RUTA PARA CREAR UNA NUEVA SESIÓN
 router.post('/', async (req, res) => {
-  // Ahora también recibimos 'descripcion' y 'id_ubicacion'
   const { tema, fecha_hora, descripcion, id_ubicacion } = req.body;
 
   if (!tema || !fecha_hora) {
@@ -32,10 +45,9 @@ router.post('/', async (req, res) => {
   }
 
   try {
-    // La consulta INSERT ahora incluye los nuevos campos
     const result = await pool.query(
       'INSERT INTO sesiones (tema, fecha_hora, descripcion, id_ubicacion, id_estado) VALUES ($1, $2, $3, $4, 1) RETURNING *',
-      [tema, fecha_hora, descripcion || null, id_ubicacion || null] // Usamos 'null' si vienen vacíos
+      [tema, fecha_hora, descripcion || null, id_ubicacion || null]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {

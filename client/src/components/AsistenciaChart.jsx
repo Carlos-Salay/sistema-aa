@@ -1,18 +1,23 @@
-// client/src/components/AsistenciaChart.jsx
 import React, { useState, useEffect } from 'react';
-// 1. Importamos 'Line' en lugar de 'Bar'
-import { Line } from 'react-chartjs-2'; 
+import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
+import { useTheme } from '../context/ThemeContext.jsx'; // 1. Importar el hook del tema
 
-// 2. Registramos los nuevos elementos para el gráfico de líneas
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
 function AsistenciaChart() {
+  const { theme } = useTheme(); // 2. Obtener el tema actual
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: [],
   });
   const [error, setError] = useState('');
+
+  // 3. Definir colores basados en el tema
+  const a = 'rgba(32, 201, 151, '; // Color principal del gradiente (Teal)
+  const b = 'rgba(59, 130, 246, '; // Color secundario del gradiente (Azul)
+  const textColor = theme === 'dark' ? 'rgba(233, 236, 239, 0.8)' : 'rgba(33, 37, 41, 0.8)';
+  const gridColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
 
   useEffect(() => {
     const fetchChartData = async () => {
@@ -26,10 +31,20 @@ function AsistenciaChart() {
             {
               label: 'Asistentes por Sesión',
               data: data.data,
-              borderColor: 'rgba(0, 106, 78, 1)', // Verde sólido para la línea
-              backgroundColor: 'rgba(0, 106, 78, 0.2)', // Verde con transparencia para el área bajo la línea
-              fill: true, // Rellena el área bajo la línea
-              tension: 0.4, // Hace la línea un poco curva y suave
+              borderColor: a + '1)',
+              // El fondo del gráfico ahora es un gradiente
+              backgroundColor: (context) => {
+                const ctx = context.chart.ctx;
+                if (!ctx) return null;
+                const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+                gradient.addColorStop(0, a + '0.5)');
+                gradient.addColorStop(1, b + '0.1)');
+                return gradient;
+              },
+              fill: true,
+              tension: 0.4,
+              pointBackgroundColor: a + '1)',
+              pointBorderColor: '#fff',
             },
           ],
         });
@@ -38,29 +53,30 @@ function AsistenciaChart() {
       }
     };
     fetchChartData();
-  }, []);
+  }, [a, b]); // Dependencias para que se actualice si cambian los colores (aunque son constantes)
 
+  // 4. Hacer que las opciones del gráfico dependan del tema
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { display: false }, // Ocultamos la leyenda, el título es suficiente
+      legend: { display: false },
       title: {
         display: true,
         text: 'Asistencia por Sesión en los Últimos 30 Días',
-        color: 'white',
-        font: { size: 18 }
+        color: textColor,
+        font: { size: 18, family: 'Poppins' }
       },
     },
     scales: {
       y: {
         beginAtZero: true,
-        ticks: { color: 'white', stepSize: 1 },
-        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+        ticks: { color: textColor, stepSize: 1, font: { family: 'Poppins' } },
+        grid: { color: gridColor }
       },
       x: {
-        ticks: { color: 'white' },
-        grid: { color: 'rgba(255, 255, 255, 0.05)' }
+        ticks: { color: textColor, font: { family: 'Poppins' } },
+        grid: { color: 'transparent' } // Hacemos la rejilla X transparente
       },
     },
   };
@@ -69,7 +85,6 @@ function AsistenciaChart() {
 
   return (
     <div style={{ height: '400px', position: 'relative' }}>
-      {/* 3. Usamos el componente <Line> */}
       <Line options={options} data={chartData} />
     </div>
   );

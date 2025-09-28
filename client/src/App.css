@@ -1,769 +1,185 @@
-/* client/src/App.css - Diseño Profesional Verde AA (Versión Unificada) */
+/* ==========================================================================
+   Archivo CSS Definitivo y Unificado para "ClaraVía"
+   ========================================================================== */
 
-/* 1. Variables de Color y Tipografía */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+/* === 1. Variables y Estilos Globales === */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 :root {
-  --bg-dark: #121212;
-  --bg-surface: #1E1E1E;
-  --bg-surface-light: #2C2C2C;
-  --text-primary: #FFFFFF;
-  --text-secondary: #B0B0B0;
-  --primary-green: #006A4E;
-  --primary-green-hover: #008763;
-  --border-color: #333333;
-  --shadow-color: rgba(0, 0, 0, 0.5);
-  --error-color: #dc3545;
-  --success-color: #28a745;
+  --font-family: 'Poppins', sans-serif;
+  /* Paleta Claro */
+  --bg-main-light: #f0f4f8; --bg-surface-light: #ffffff; --text-primary-light: #111827; --text-secondary-light: #6b7280; --primary-accent-light: #007bff; --border-light: #dee2e6;
+  /* Paleta Oscuro */
+  --bg-main-dark: #101727; --bg-surface-dark: #1e293b; --text-primary-dark: #f8fafc; --text-secondary-dark: #94a3b8; --primary-accent-dark: #38bdf8; --border-dark: #334155;
+}
+:root {
+  --bg-main: var(--bg-main-light); --bg-surface: var(--bg-surface-light); --text-primary: var(--text-primary-light); --text-secondary: var(--text-secondary-light); --primary-accent: var(--primary-accent-light); --border-color: var(--border-light); --shadow-color: rgba(0, 0, 0, 0.07); --error-color: #dc3545;
+}
+[data-theme='dark'] {
+  --bg-main: var(--bg-main-dark); --bg-surface: var(--bg-surface-dark); --text-primary: var(--text-primary-dark); --text-secondary: var(--text-secondary-dark); --primary-accent: var(--primary-accent-dark); --border-color: var(--border-dark); --shadow-color: rgba(0, 0, 0, 0.2); --error-color: #f47272;
 }
 
-/* 2. Estilos Globales */
-body {
-  margin: 0;
-  font-family: 'Roboto', sans-serif;
-  background-color: var(--bg-dark);
-  color: var(--text-primary);
-  line-height: 1.6;
-}
+body { margin: 0; font-family: var(--font-family); background-color: var(--bg-main); color: var(--text-primary); }
+.main-content { padding: 50px 0; }
+.page-content-wrapper { max-width: 1400px; margin: 0 auto; padding: 0 40px; box-sizing: border-box; }
 
-/* 3. Layout Principal y Barra de Navegación */
+/* === 2. Barra de Navegación de Doble Altura === */
 .top-navbar {
   background-color: var(--bg-surface);
-  border-bottom: 1px solid var(--border-color);
-  padding: 10px 40px;
-  box-shadow: 0 2px 8px var(--shadow-color);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+  box-shadow: 0 2px 10px var(--shadow-color);
+  position: sticky; top: 0; z-index: 1000;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
 }
+.top-bar, .bottom-bar { display: flex; align-items: center; justify-content: space-between; padding: 0 40px; max-width: 1400px; margin: 0 auto; }
+.top-bar { height: 70px; border-bottom: 1px solid var(--border-color); }
+.bottom-bar { height: 55px; justify-content: center; }
+.navbar-brand { display: flex; align-items: center; gap: 15px; }
+.navbar-logo { height: 50px; }
+.navbar-title { font-size: 1.6rem; font-weight: 600; margin: 0; color: var(--text-primary); }
+.nav-links { display: flex; list-style: none; margin: 0; padding: 0; gap: 10px; }
+.nav-links a { color: var(--text-secondary); font-weight: 500; text-decoration: none; padding: 8px 18px; border-radius: 8px; font-size: 1rem; transition: all 0.2s ease; }
+.nav-links a:hover { color: var(--text-primary); background-color: var(--border-color); }
+.nav-links a.active { color: #fff; background: linear-gradient(90deg, #007bff, #00c6ff); }
+.navbar-user { display: flex; align-items: center; gap: 20px; }
+.user-info { text-align: right; }
+.user-name { font-size: 1rem; font-weight: 600; color: var(--text-primary); }
+.user-role { font-size: 0.8rem; color: var(--text-secondary); }
+.theme-toggle-button, .logout-button, .nav-icon-button { background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer; padding: 8px; border-radius: 50%; display:flex; align-items:center; transition: all 0.2s; }
+.theme-toggle-button:hover, .logout-button:hover, .nav-icon-button:hover { color: var(--text-primary); background-color: var(--border-color); }
 
-.navbar-content {
+/* === 3. Títulos, Botones y Formularios === */
+.page-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 40px; padding-bottom: 15px; border-bottom: 3px solid var(--primary-accent); color: var(--text-primary); }
+button { font-family: var(--font-family); font-weight: 600; padding: 12px 28px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.2s ease; background: linear-gradient(90deg, #007bff, #00c6ff); color: white; }
+button:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0, 123, 255, 0.3); }
+
+/* === 4. Dashboard y Tarjetas === */
+.dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+.card { background-color: var(--bg-surface); border-radius: 12px; padding: 30px; display: flex; flex-direction: column; box-shadow: 0 5px 20px var(--shadow-color); border: 1px solid var(--border-color); }
+.card-header { font-size: 1.1rem; font-weight: 500; margin-bottom: 15px; gap: 12px; display: flex; align-items: center; color: var(--text-secondary); }
+.card-icon { font-size: 1.8rem; color: var(--primary-accent); }
+.card-body { margin: auto 0; padding: 20px 0; text-align: center; }
+.card-value { font-size: 4rem; font-weight: 700; color: var(--text-primary); line-height: 1; }
+.card-footer { font-size: 1rem; color: var(--text-secondary); margin-top: 15px; text-align: center; }
+
+/* === 5. Página de Login - DISEÑO CORREGIDO === */
+.login-page-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: var(--bg-main); padding: 20px; }
+.login-card-split { display: flex; width: 100%; max-width: 900px; min-height: 550px; background-color: var(--bg-surface); border-radius: 20px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); overflow: hidden; }
+.login-form-section { flex-basis: 50%; padding: 50px; display: flex; flex-direction: column; justify-content: center; position: relative; }
+.theme-toggle-button-login { position: absolute; top: 25px; right: 25px; background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer; }
+.login-title-split { font-size: 2rem; font-weight: 700; color: var(--text-primary); margin: 0 0 10px 0; }
+.login-subtitle { color: var(--text-secondary); margin-bottom: 30px; }
+.login-form-section form {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1400px;
-  margin: 0 auto;
+  flex-direction: column;
+}
+.input-group { position: relative; margin-bottom: 20px; }
+.input-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); }
+.input-group input { padding-left: 45px; height: 50px; border-radius: 10px; border: 1px solid var(--border-color); background-color: var(--bg-main); font-family: var(--font-family); color: var(--text-primary); box-sizing: border-box; width: 100%; }
+.password-toggle-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); cursor: pointer; }
+.login-button-primary { width: 100%; height: 50px; font-weight: 600; background: linear-gradient(90deg, #007bff, #00c6ff); box-sizing: border-box; }
+.login-button-primary:hover { box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4); transform: translateY(-2px); }
+.login-image-section-blue { flex-basis: 50%; background: linear-gradient(45deg, #007bff, #00c6ff); display: flex; justify-content: center; align-items: center; padding: 20px; }
+.login-image-section-blue .image-wrapper { background: rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
+.login-decorative-image { max-width: 300px; border-radius: 15px; }
+
+/* === 6. Responsividad === */
+@media (max-width: 900px) { .bottom-bar { display: none; } }
+@media (max-width: 800px) { .login-image-section-blue { display: none; } .login-card-split { flex-direction: column; max-width: 450px; } }
+@media (max-width: 600px) {
+  .top-bar { padding: 0 20px; height: 70px; }
+  .user-role, .user-name { display: none; }
+  .navbar-logo { height: 45px; }
+  .page-content-wrapper { padding: 0 20px; }
 }
 
-.navbar-brand {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
 
-.navbar-logo {
-  height: 55px;
-  width: auto;
-}
 
-.navbar-title-group {
-    display: flex;
-    flex-direction: column;
-}
 
-.navbar-title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1;
-}
+/* === ESTILOS PARA SELECT PERSONALIZADO === */
 
-.app-slogan {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  margin-top: 2px;
-  font-style: italic;
-}
-
-.nav-links {
-  display: flex;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  gap: 15px;
-}
-
-.nav-links a {
-  color: var(--text-secondary);
-  text-decoration: none;
-  padding: 10px 15px;
-  border-radius: 6px;
-  font-weight: 500;
+.select-group {
   position: relative;
-  transition: color 0.3s ease;
 }
 
-.nav-links a::after {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 2px;
-  bottom: 0;
-  left: 50%;
-  background-color: var(--primary-green);
-  transition: all 0.3s ease;
-}
-
-.nav-links a:hover {
+.input-group select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-left: 45px;
+  height: 50px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-main);
+  font-family: var(--font-family);
   color: var(--text-primary);
-}
-
-.nav-links a:hover::after,
-.nav-links a.active::after {
   width: 100%;
-  left: 0;
-}
-
-.nav-links a.active {
-  color: var(--primary-green);
-  font-weight: bold;
-}
-
-.navbar-user {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.user-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  text-align: right;
-}
-
-.user-name {
-  font-weight: bold;
-  color: var(--text-primary);
-  line-height: 1;
-}
-
-.user-role {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-}
-
-.nav-link-icon {
-  color: var(--text-secondary);
-  font-size: 1.5rem;
-  transition: color 0.3s ease;
-}
-
-.nav-link-icon:hover {
-  color: var(--primary-green);
-}
-
-.logout-button {
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  font-size: 1.5rem;
   cursor: pointer;
-  padding: 5px;
-  transition: color 0.3s ease;
-}
-
-.logout-button:hover {
-  color: var(--error-color);
-}
-
-/* 4. Contenido Principal y Contenedores */
-.main-content {
-  flex-grow: 1;
-  width: 100%;
-  padding: 40px 0;
-  box-sizing: border-box;
-}
-
-.page-content-wrapper {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 40px;
-  box-sizing: border-box;
-}
-
-.content-section {
-  background-color: var(--bg-surface);
-  border-radius: 8px;
-  padding: 30px;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 4px 12px var(--shadow-color);
-  margin-bottom: 30px;
-}
-
-/* 5. Estilos de Títulos y Logos de Página */
-.page-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 30px;
-  border-bottom: 2px solid var(--primary-green);
-  padding-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.page-logo-icon {
-  font-size: 2.2rem;
-  color: var(--primary-green);
-  margin-right: 10px;
-}
-
-/* 6. Dashboard y Tarjetas */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
-}
-
-.card {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 25px;
-  box-shadow: 0 4px 12px var(--shadow-color);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  display: flex;
-  flex-direction: column;
-}
-
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px var(--shadow-color);
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  color: var(--text-secondary);
-  font-size: 1.1rem;
-  font-weight: 500;
-}
-
-.card-icon {
-  font-size: 1.8rem;
-  color: var(--primary-green);
-}
-
-.card-body {
-  flex-grow: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 20px 0;
-}
-
-.card-value {
-  font-size: 3.5rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1;
-}
-
-.card-footer {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  text-align: center;
-}
-
-/* 7. Formularios, Tablas y Botones */
-input, button, select, textarea {
   font-size: 1rem;
-  padding: 12px;
-  margin: 5px 0 15px 0;
-  background-color: var(--bg-dark);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  box-sizing: border-box; /* Importante para consistencia de tamaño */
-  width: 100%;
 }
 
-input:focus, select:focus, textarea:focus {
-  outline: none;
-  border-color: var(--primary-green);
-  box-shadow: 0 0 0 3px rgba(0, 106, 78, 0.5);
-}
-
-button {
-  cursor: pointer;
-  background-color: var(--primary-green);
-  font-weight: bold;
-  border: none;
-  transition: background-color 0.2s ease-in-out;
-}
-
-button:hover {
-  background-color: var(--primary-green-hover);
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  font-weight: 500;
+.select-arrow {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
   color: var(--text-secondary);
-  margin-bottom: 8px;
+  pointer-events: none; /* Evita que el icono intercepte los clics */
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+
+
+
+
+
+
+/* === ESTILOS PARA LA PÁGINA DE REGISTRO (Estilo Login) === */
+
+.registro-form {
+  width: 100%; /* Asegura que el form ocupe todo el espacio de la columna */
 }
 
-th, td {
-  padding: 12px;
-  border-bottom: 1px solid var(--border-color);
-  text-align: left;
-}
-
-th {
-  background-color: var(--bg-surface-light);
-  font-weight: bold;
-}
-
-tbody tr:hover {
-  background-color: var(--bg-surface-light);
-}
-
-/* 8. Estilos para la Página de Login */
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: calc(100vh - 75px); /* Altura de la ventana menos la navbar */
-  padding: 20px;
-}
-
-.login-card {
-  background-color: var(--bg-surface);
-  border-radius: 8px;
-  padding: 40px;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 4px 12px var(--shadow-color);
-  width: 100%;
-  max-width: 400px;
-  text-align: center;
-}
-
-.login-logo {
-  width: 100px;
-  height: auto;
-  margin-bottom: 20px;
-}
-
-.login-title {
-  color: var(--text-primary);
-  text-shadow: 0 0 8px var(--primary-green), 0 0 15px rgba(0, 106, 78, 0.6);
-  transition: text-shadow 0.3s ease-in-out;
-  font-size: 1.8rem;
-  margin-top: 0;
-  margin-bottom: 30px;
-}
-
-.login-title:hover {
-  text-shadow: 0 0 12px var(--primary-green), 0 0 25px rgba(0, 106, 78, 0.8);
-}
-
-.login-card .form-group {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 15px;
-}
-
-.login-card .form-group label {
-  flex-basis: 120px;
-  flex-shrink: 0;
-  text-align: right;
-  margin-bottom: 0;
-}
-
-/* Corrección para autocompletado del navegador */
-input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus, 
-input:-webkit-autofill:active {
-    -webkit-text-fill-color: var(--text-primary) !important;
-    box-shadow: 0 0 0 30px var(--bg-dark) inset !important;
-}
-
-/* 9. Estilos para la Página de Registro */
-.registration-container {
-  display: flex;
-  justify-content: center;
-  padding: 20px 0;
-}
-
-.registration-card {
-  background-color: var(--bg-surface);
-  border-radius: 8px;
-  padding: 40px;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 4px 12px var(--shadow-color);
-  width: 100%;
-  max-width: 800px;
-  text-align: center;
-}
-
-.registration-logo {
-  width: 100px;
-  height: auto;
-  margin-bottom: 20px;
-}
-
-.registration-title {
-  font-size: 1.8rem;
-  margin-top: 0;
-  margin-bottom: 30px;
-  color: var(--text-primary);
-}
-
-.form-grid {
+.form-grid-double {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px 30px;
-  margin-bottom: 30px;
+  gap: 20px;
 }
 
-.registration-card .form-group {
+/* Ajuste para los inputs de tipo 'date' */
+.input-group input[type="date"] {
+  padding-right: 15px;
+  color: var(--text-secondary);
+}
+
+.input-group input[type="date"]:focus,
+.input-group input[type="date"]:valid {
+    color: var(--text-primary);
+}
+
+.password-requirements-registro {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
-  margin-bottom: 0;
-}
-
-.submit-button {
-  width: 100%;
-  margin-top: 20px;
-  padding: 15px;
-  font-size: 1.1rem;
-}
-
-/* 10. Estilos de Notificaciones y Modales */
-.message-success, .message-error {
-  margin-top: 25px;
-  padding: 15px;
-  border-radius: 6px;
-  text-align: center;
-  font-weight: 500;
-  border: 1px solid;
-}
-
-.message-success {
-  background-color: rgba(0, 106, 78, 0.2);
-  color: var(--primary-green);
-  border-color: var(--primary-green);
-}
-
-.message-error {
-  background-color: rgba(255, 77, 77, 0.2);
-  color: #ff4d4d;
-  border-color: #ff4d4d;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: rgba(0, 0, 0, 0.75);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-}
-
-.modal-content {
-  background-color: var(--bg-surface);
-  padding: 30px;
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 5px 20px var(--shadow-color);
-  width: 100%;
-  max-width: 500px;
-  text-align: center;
-}
-
-.modal-title {
-  color: var(--primary-green);
-  font-size: 1.8rem;
-  margin-top: 0;
+  gap: 8px;
+  padding: 10px 0;
   margin-bottom: 15px;
 }
-
-
-/* --- Ajustes para Formularios dentro de .content-section (Sesiones, etc.) --- */
-
-.content-section form {
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Esto centrará el botón y los grupos de formulario */
-}
-
-/* Damos un ancho máximo a cada grupo de label + input */
-.content-section .form-group {
-  width: 100%;
-  max-width: 500px; /* Ancho estándar para los campos */
-  margin-bottom: 20px;
-}
-
-/* Nos aseguramos que el label siga a la izquierda */
-.content-section .form-group label {
-  text-align: left;
-}
-
-/* Hacemos que el botón tenga un tamaño estándar en lugar de 100% */
-.content-section button {
-  width: auto;
-  min-width: 250px; /* Ancho mínimo para el botón */
-}
-
-
-/* --- Estilos para la Página de Mensajería --- */
-.chat-container {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  max-width: 800px;
-  margin: 0 auto;
-  height: 70vh; /* Altura del chat */
-}
-
-.chat-header {
-  background-color: var(--bg-surface-light);
-  padding: 15px;
-  text-align: center;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.chat-header h3 {
-  margin: 0;
-  font-weight: 500;
-}
-
-.chat-messages {
-  flex-grow: 1;
-  padding: 20px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.message {
-  padding: 10px 15px;
-  border-radius: 18px;
-  max-width: 70%;
-  line-height: 1.4;
-}
-
-.message p {
-  margin: 0;
-  color: var(--text-primary);
-}
-
-.message span {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  display: block;
-  text-align: right;
-  margin-top: 5px;
-}
-
-.message.sent {
-  background-color: var(--primary-green);
-  align-self: flex-end; /* Alinea a la derecha */
-  border-bottom-right-radius: 4px;
-}
-
-.message.received {
-  background-color: var(--bg-surface-light);
-  align-self: flex-start; /* Alinea a la izquierda */
-  border-bottom-left-radius: 4px;
-}
-
-.chat-input-form {
-  display: flex;
-  padding: 15px;
-  background-color: var(--bg-surface-light);
-  border-top: 1px solid var(--border-color);
-}
-
-.chat-input-form input {
-  flex-grow: 1;
-  margin: 0;
-}
-
-.chat-input-form button {
-  margin: 0 0 0 10px;
-  width: auto;
-}
-
-
-/* --- Estilos Mejorados para la Tabla de Asistencia --- */
-
-.asistencia-table {
-  border-radius: 8px; /* Redondea las esquinas de la tabla */
-  overflow: hidden; /* Oculta lo que se salga de los bordes redondeados */
-  border: 1px solid var(--border-color);
-}
-
-.asistencia-table tbody tr {
-  transition: background-color 0.3s ease; /* Transición suave de color */
-}
-
-/* --- ESTILO PARA LA FILA CUANDO EL CHECKBOX ESTÁ MARCADO --- */
-.asistencia-table tbody tr.fila-marcada {
-  background-color: rgba(0, 106, 78, 0.2); /* Verde semitransparente */
-}
-
-.asistencia-table tbody tr.fila-marcada td {
-  font-weight: bold; /* Opcional: texto en negrita al marcar */
-  color: var(--text-primary);
-}
-
-/* --- ESTILOS PARA EL CHECKBOX --- */
-.checkbox-cell {
-  text-align: center;
-}
-
-.asistencia-checkbox {
-  transform: scale(1.2); /* Hace el checkbox más grande y fácil de clickear */
-  accent-color: var(--primary-green); /* Pone el check de color verde */
-  margin: 0;
-}
-
-
-
-.submit-button-asistencia {
-  width: 100%;
-  max-width: 500px;
-  margin: 30px auto 0 auto;
-  display: block;
-}
-
-
-
-/* --- Estilos para el Perfil del Miembro --- */
-.profile-header {
+.password-requirements-registro .requirement {
   display: flex;
   align-items: center;
-  gap: 25px;
-  margin-bottom: 40px;
-  background-color: var(--bg-surface);
-  padding: 25px;
-  border-radius: 8px;
-}
-.profile-icon {
-  font-size: 6rem;
-  color: var(--primary-green);
-}
-.profile-info {
-  text-align: left;
-}
-.profile-alias {
-  margin: 0;
-  font-size: 2.8rem;
-  font-weight: 700;
-}
-.profile-code {
-  margin: 0;
-  color: var(--text-secondary);
-  font-size: 1.1rem;
-}
-
-
-
-/* --- Estilos para la Bitácora del Miembro --- */
-
-.bitacora-entry {
-  background-color: var(--bg-dark);
-  border: 1px solid var(--border-color);
-  border-left: 4px solid var(--primary-green);
-  padding: 15px 20px;
-  border-radius: 6px;
-  margin-bottom: 15px;
-}
-
-.bitacora-entry p {
-  margin: 0 0 10px 0;
-  color: var(--text-primary);
-  white-space: pre-wrap; /* Respeta los saltos de línea y espacios */
-}
-
-.bitacora-entry small {
-  display: block;
-  text-align: right;
-  color: var(--text-secondary);
-  font-size: 0.85rem;
-}
-
-
-
-
-/* --- Estilos para la Bandeja de Entrada de Mensajes --- */
-
-.conversation-list {
-  display: flex;
-  flex-direction: column;
   gap: 10px;
-}
-
-.conversation-item {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  background-color: var(--bg-surface-light);
-  padding: 15px;
-  border-radius: 6px;
-  text-decoration: none;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  border-left: 4px solid transparent;
-}
-
-.conversation-item:hover {
-  background-color: var(--bg-surface-light);
-  transform: translateX(5px);
-  border-left-color: var(--primary-green);
-}
-
-.conversation-icon {
-  font-size: 2rem;
-  color: var(--text-secondary);
-}
-
-.conversation-item:hover .conversation-icon {
-  color: var(--primary-green);
-}
-
-.conversation-details {
-  display: flex;
-  flex-direction: column;
-}
-
-.conversation-alias {
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.conversation-code {
   font-size: 0.9rem;
   color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+.password-requirements-registro .requirement.valid {
+  color: #28a745;
+}
+[data-theme='dark'] .password-requirements-registro .requirement.valid {
+  color: #98c379;
 }
 
 
 
-
-/* --- Estilos para el Calendario Personalizado (Versión Final) --- */
+/* === ESTILOS PARA EL CALENDARIO (Diseño Azul Unificado) === */
 
 .calendar-header {
   display: flex;
@@ -773,64 +189,90 @@ input:-webkit-autofill:active {
 }
 
 .month-title {
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   font-weight: 600;
   margin: 0;
   flex-grow: 1;
   text-align: center;
   text-transform: capitalize;
+  color: var(--text-primary);
 }
 
+/* Usamos el estilo de botón estándar */
 .calendar-header .nav-button, .calendar-header .today-button {
-  background-color: var(--bg-surface-light);
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 8px;
   border: 1px solid var(--border-color);
+  cursor: pointer;
+  background: var(--bg-surface);
   color: var(--text-primary);
-  padding: 8px 12px;
   margin: 0 5px;
   width: auto;
+  transition: all 0.2s ease;
+}
+
+.calendar-header .nav-button:hover, .calendar-header .today-button:hover {
+    border-color: var(--primary-accent);
+    color: var(--primary-accent);
 }
 
 .calendar-header .today-button {
-  background-color: var(--primary-green);
+  background: var(--primary-accent);
+  border-color: var(--primary-accent);
+  color: #fff;
 }
-.calendar-header .today-button:hover {
-  background-color: var(--primary-green-hover);
+[data-theme='dark'] .calendar-header .today-button {
+    color: var(--bg-main-dark);
 }
 
 .calendar-weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  font-weight: bold;
+  font-weight: 600;
   text-align: center;
   padding-bottom: 10px;
   border-bottom: 1px solid var(--border-color);
   margin-bottom: 10px;
+  color: var(--text-secondary);
 }
 
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
+  gap: 8px; /* Un poco más de espacio */
 }
 
 .calendar-day {
-  background-color: var(--bg-surface-light);
-  min-height: 110px; /* Celdas un poco más bajas */
+  background-color: var(--bg-surface);
+  min-height: 120px;
   padding: 8px;
-  border-radius: 4px;
+  border-radius: 8px; /* Bordes más suaves */
   display: flex;
   flex-direction: column;
-  border: 1px solid transparent;
+  border: 1px solid var(--border-color);
+  transition: border-color 0.2s ease;
 }
 
 .calendar-day.empty {
   background-color: transparent;
+  border-color: transparent;
 }
 
-/* CORRECCIÓN: Estilo para resaltar el día de hoy */
+.calendar-day.today {
+    border-color: var(--primary-accent);
+}
+
+.day-number {
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-align: right;
+  margin-bottom: 5px;
+}
+
 .calendar-day.today .day-number {
-  background-color: var(--primary-green);
-  color: white;
+  background-color: var(--primary-accent);
+  color: #fff;
   border-radius: 50%;
   width: 28px;
   height: 28px;
@@ -838,28 +280,26 @@ input:-webkit-autofill:active {
   align-items: center;
   justify-content: center;
   padding: 0;
-  float: right; /* Alinea el círculo a la derecha */
+  float: right;
+}
+[data-theme='dark'] .calendar-day.today .day-number {
+    color: var(--bg-main-dark);
 }
 
-.day-number {
-  font-weight: 500;
-  color: var(--text-secondary);
-  text-align: right;
-}
 
 .sessions-container {
-  margin-top: 5px;
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
 
 .session-event {
-  background-color: var(--primary-green);
-  color: var(--text-primary);
-  padding: 5px;
-  border-radius: 4px;
+  background-color: color-mix(in srgb, var(--primary-accent) 15%, transparent);
+  color: var(--primary-accent);
+  padding: 5px 8px;
+  border-radius: 6px;
   font-size: 0.8rem;
+  font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -868,192 +308,585 @@ input:-webkit-autofill:active {
 }
 
 .session-event:hover {
-  background-color: var(--primary-green-hover);
+  background-color: color-mix(in srgb, var(--primary-accent) 30%, transparent);
 }
 
 
+/* === ESTILOS PARA LAS VENTANAS FLOTANTES (MODALES) === */
 
-/* --- Estilos para el Muro de Testimonios --- */
-.testimonios-list {
-  margin-top: 40px;
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
   display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
-.testimonio-card {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-left: 5px solid var(--primary-green);
-  padding: 25px;
-  border-radius: 8px;
-}
-.testimonio-card h3 {
-  margin-top: 0;
-  font-size: 1.5rem;
-}
-.testimonio-autor {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  margin-top: -15px;
-  margin-bottom: 20px;
-}
-.testimonio-contenido {
-  white-space: pre-wrap; /* Respeta saltos de línea y espacios */
-}
-
-.reaction-bar {
-  margin-top: 20px;
-  padding-top: 15px;
-  border-top: 1px solid var(--border-color);
-  display: flex;
-  gap: 15px;
-}
-
-.reaction-button {
-  background: var(--bg-surface-light);
-  border: 1px solid var(--border-color);
-  color: var(--text-secondary);
-  display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  font-size: 0.9rem;
-  width: auto;
-  border-radius: 20px; /* Bordes redondeados como píldora */
-  cursor: pointer;
-  transition: all 0.2s ease;
+  z-index: 2000;
+  padding: 20px;
 }
 
-.reaction-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+.modal-content {
+  background-color: var(--bg-surface);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 500px;
+  border: 1px solid var(--border-color);
 }
 
-/* --- COLORES Y ESTILOS PARA BOTONES ACTIVOS --- */
-.reaction-button.apoyo.active {
-  background-color: #2980b9; /* Azul de apoyo */
-  color: white;
-  border-color: #2980b9;
-}
-.reaction-button.inspiracion.active {
-  background-color: #f1c40f; /* Amarillo de inspiración */
-  color: #333;
-  border-color: #f1c40f;
-}
-.reaction-button.gratitud.active {
-  background-color: #e74c3c; /* Rojo de gratitud */
-  color: white;
-  border-color: #e74c3c;
-}
-
-
-/* --- Estilos para la Tabla de Miembros --- */
-
-/* 1. Días de sobriedad: texto más pequeño y destacado */
-.dias-sobriedad {
-  font-weight: bold;
-  font-size: 0.9rem;
-}
-
-/* 4. Botón de contraseña */
-.password-button {
-  background-color: #007bff;
-  color: white;
-}
-.password-button:hover {
-  background-color: #0056b3;
-}
-
-/* 5. Botón de baja */
-.baja-button {
-  background-color: var(--error-color, #dc3545);
-  color: white;
-}
-.baja-button:hover {
-  background-color: #c82333;
-}
-
-/* 6. Botón de alta (activar miembro) */
-.alta-button {
-  background-color: var(--success-color, #28a745);
-  color: white;
-}
-.alta-button:hover {
-  background-color: #218838;
-}
-
-/* 7. Botón de recaída */
-.recaida-button {
-  background-color: #ffc107;
-  color: #1E1E1E;
-}
-.recaida-button:hover {
-  background-color: #e0a800;
-}
-
-/* 8. Botón de confirmación dentro de modal */
-.baja-button-confirm {
-  background-color: var(--error-color, #dc3545) !important;
-  color: white;
-}
-.baja-button-confirm:hover {
-  background-color: #c82333 !important;
-}
-
-/* 9. Toggle de vista (opcional, si aplicas filtros o tabs) */
-.view-toggle {
-  margin-bottom: 5px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-.view-toggle button {
-  padding: 6px 12px;
-  background-color: var(--bg-surface-light, #f0f0f0);
-  border-radius: 4px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  border: none;
-}
-.view-toggle button.active {
-  background-color: var(--primary-green, #28a745);
-  color: white;
-}
-
-/* Contenedor para filtros y buscador en tablas */
-.table-controls {
+.modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 20px 25px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.modal-close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+}
+
+.modal-body {
+  padding: 25px;
+}
+
+.modal-body p {
+  margin-top: 0;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.modal-form .form-group {
+  margin-bottom: 20px;
+}
+.modal-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+/* Botones especiales para modales */
+.button-secondary {
+    background: var(--border-color);
+    color: var(--text-primary);
+}
+.button-danger {
+    background: var(--error-color);
+    color: #fff;
+}
+.button-success {
+    background: #28a745;
+    color: #fff;
+}
+.full-width-button {
+    width: 100%;
+}
+
+
+
+/* === ESTILOS PARA LA PÁGINA DE MIEMBROS === */
+
+.table-controls {
+  display: flex;
+  margin-bottom: 25px;
+}
+.view-toggle {
+  display: flex;
+  background-color: var(--bg-main);
+  border-radius: 8px;
+  padding: 5px;
+}
+.view-toggle button {
+  background: none;
+  padding: 8px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: none;
+}
+.view-toggle button.active {
+  background: var(--bg-surface);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  color: var(--text-primary);
+}
+[data-theme='dark'] .view-toggle button.active {
+  background: linear-gradient(90deg, #007bff, #00c6ff);
+  color: #fff;
+}
+
+.table-responsive { overflow-x: auto; }
+.miembros-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+}
+.miembros-table th, .miembros-table td {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+    vertical-align: middle;
+}
+.miembros-table th {
+    background-color: var(--bg-main);
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+.miembros-table tbody tr:hover {
+    background-color: color-mix(in srgb, var(--primary-accent) 5%, var(--bg-surface));
+}
+
+.alias-cell { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+.logro-icon { font-size: 1.2rem; color: #f0b429; }
+.dias-sobriedad { font-weight: 600; }
+.text-secondary { color: var(--text-secondary); }
+
+.paso-select-group { position: relative; max-width: 250px; }
+.paso-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 100%;
+  padding-right: 30px;
+  height: 45px;
+  border-radius: 8px;
+}
+
+.acciones-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.action-icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 1rem;
+  background: var(--bg-main);
+  color: var(--text-secondary);
+  box-shadow: none;
+}
+.action-icon-button:hover {
+  color: var(--text-primary);
+  background: var(--border-color);
+  transform: scale(1.1);
+}
+.action-icon-button.success { color: #28a745; }
+.action-icon-button.warning { color: #ffc107; }
+.action-icon-button.danger { color: #dc3545; }
+
+/* === AJUSTES PARA FORMULARIOS DENTRO DE MODALES === */
+
+.modal-form .input-group {
   margin-bottom: 20px;
 }
 
-/* Estilo para el input de búsqueda */
-.search-input {
-  width: 300px;
-  margin: 0; /* Resetea el margen por defecto del input */
-  padding: 8px 12px; /* Un poco menos de padding que los inputs de formulario */
+
+
+
+/* === ESTILOS PARA PÁGINAS CON FORMULARIOS EN TARJETA === */
+
+.registro-page-container {
+  padding-bottom: 40px; /* Espacio entre la tarjeta del form y la tabla de abajo */
 }
 
-/* Ajuste para que el toggle no ocupe todo el espacio */
-.view-toggle {
-    margin-bottom: 0;
+.registro-card {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.registro-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 20px;
+  margin-bottom: 30px;
+}
+
+.registro-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-primary);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+
+/* === AJUSTES PARA INPUTS ESPECIALES CON ICONO === */
+
+.input-group.textarea-group .input-icon {
+  top: 18px; /* Alinea el icono con la primera línea de texto */
+  transform: translateY(0);
+}
+
+/* === CORRECCIÓN DE ANCHO PARA TEXTAREA === */
+.input-group textarea {
+    width: 100%;
+    box-sizing: border-box; /* Asegura que el padding no afecte el ancho total */
+}
+
+/* Ajustes para el input de fecha y hora */
+.input-group input[type="datetime-local"] {
+  padding-right: 15px;
+  color: var(--text-secondary);
+}
+
+.input-group input[type="datetime-local"]:focus,
+.input-group input[type="datetime-local"]:valid {
+    color: var(--text-primary);
+}
+
+
+/* === ESTILOS PARA LA PÁGINA DE ASISTENCIA === */
+
+.asistencia-header {
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+}
+
+.asistencia-table tbody tr {
+  cursor: pointer; /* Indica que la fila es clickeable */
+  transition: background-color 0.2s ease;
+}
+
+/* Estilo para la fila cuando está seleccionada */
+.asistencia-table tbody tr.fila-marcada {
+  background-color: color-mix(in srgb, var(--primary-accent) 15%, transparent);
+}
+.asistencia-table tbody tr.fila-marcada td {
+  font-weight: 600;
+}
+
+.checkbox-cell {
+  text-align: center;
+}
+
+/* Checkbox personalizado */
+.custom-checkbox {
+  width: 22px;
+  height: 22px;
+  background-color: var(--bg-main);
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: #fff;
+  transition: all 0.2s ease;
+}
+
+.fila-marcada .custom-checkbox {
+  background-color: var(--primary-accent);
+  border-color: var(--primary-accent);
+}
+
+
+
+/* === ESTILOS PARA LA PÁGINA DE MENSAJERÍA (CHAT) === */
+
+.chat-container {
+  max-width: 800px;
+  margin: 0 auto;
+  height: 75vh; /* Altura de la ventana de chat */
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-header {
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-main);
+}
+
+.chat-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.chat-messages {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Estilo para la barra de scroll */
+.chat-messages::-webkit-scrollbar {
+  width: 8px;
+}
+.chat-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chat-messages::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 10px;
+}
+
+.message {
+  padding: 10px 15px;
+  border-radius: 18px;
+  max-width: 75%;
+  line-height: 1.5;
+}
+
+.message p {
+  margin: 0;
+  white-space: pre-wrap; /* Respeta saltos de línea y espacios */
+}
+
+.message span {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  display: block;
+  text-align: right;
+  margin-top: 5px;
+  opacity: 0.8;
+}
+
+/* Mensajes enviados por el usuario */
+.message.sent {
+  align-self: flex-end; /* Alinea a la derecha */
+  background: linear-gradient(90deg, #007bff, #00c6ff);
+  color: #fff;
+  border-bottom-right-radius: 4px; /* Efecto de "burbuja" */
+}
+.message.sent span {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+
+/* Mensajes recibidos */
+.message.received {
+  align-self: flex-start; /* Alinea a la izquierda */
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-bottom-left-radius: 4px; /* Efecto de "burbuja" */
+}
+
+.chat-input-form {
+  display: flex;
+  gap: 10px;
+  padding: 15px;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--bg-main);
+}
+
+.chat-input-form input {
+  flex-grow: 1;
+  margin: 0;
+}
+
+.chat-input-form button {
+  flex-shrink: 0; /* Evita que el botón se encoja */
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+
+/* === ESTILOS PARA LISTAS DE CONTACTOS (Ahijados y Mensajes) === */
+
+.conversation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Espacio entre cada contacto */
+}
+
+.conversation-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background-color: var(--bg-main);
+  padding: 15px 20px;
+  border-radius: 10px;
+  text-decoration: none;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease-in-out;
+}
+
+.conversation-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px var(--shadow-color);
+  border-color: var(--primary-accent);
+}
+
+.conversation-icon {
+  font-size: 2rem;
+  color: var(--primary-accent);
+}
+
+.conversation-details {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.conversation-alias {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.conversation-code {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.conversation-go-to-chat-icon {
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  transition: transform 0.2s ease;
+}
+
+.conversation-item:hover .conversation-go-to-chat-icon {
+  transform: translateX(5px);
+  color: var(--primary-accent);
 }
 
 
 
 
+/* === ESTILOS PARA LA PÁGINA DE BITÁCORA === */
 
-/* --- Estilos para el Muro de Testimonios (Añadidos) --- */
+/* Asegura que el textarea ocupe todo el ancho de la tarjeta */
+.content-section .form-group textarea {
+    width: 100%;
+    box-sizing: border-box; 
+}
+
+/* Reutiliza el estilo para alinear botones a la derecha */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+/* Estilos para la lista de entradas anteriores */
+.bitacora-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.bitacora-entry {
+  background-color: var(--bg-main);
+  border-left: 4px solid var(--primary-accent);
+  padding: 15px 20px;
+  border-radius: 8px;
+}
+
+.bitacora-entry p {
+  margin: 0 0 10px 0;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  line-height: 1.7;
+}
+
+.bitacora-entry small {
+  display: block;
+  text-align: right;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+
+/* === ESTILOS PARA LA PÁGINA DE TESTIMONIOS === */
+
+.testimonios-list {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.testimonio-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 25px 30px;
+  box-shadow: 0 5px 15px var(--shadow-color);
+}
+
 .testimonio-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 15px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 15px;
+  margin-bottom: 15px;
 }
+
 .testimonio-header h3 {
-  margin-top: 0;
+  margin: 0;
   font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
 }
+
 .delete-testimonio-btn {
   background: none;
   border: none;
@@ -1061,7 +894,69 @@ input:-webkit-autofill:active {
   font-size: 1rem;
   cursor: pointer;
   padding: 5px;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s;
+  box-shadow: none;
 }
+
 .delete-testimonio-btn:hover {
-  color: var(--error-color);
+  background-color: var(--error-color);
+  color: #fff;
+}
+
+.testimonio-autor {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.testimonio-contenido {
+  white-space: pre-wrap;
+  line-height: 1.7;
+  color: var(--text-primary);
+}
+
+.reaction-bar {
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.reaction-button {
+  background: var(--bg-main);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 20px;
+  cursor: pointer;
+  box-shadow: none;
+  transition: all 0.2s ease;
+}
+
+.reaction-button:hover {
+  transform: translateY(-2px);
+  color: var(--text-primary);
+}
+
+/* Colores para botones activos */
+.reaction-button.apoyo.active { background-color: #007bff; border-color: #007bff; color: white; }
+.reaction-button.inspiracion.active { background-color: #ffc107; border-color: #ffc107; color: #212529; }
+.reaction-button.gratitud.active { background-color: #e83e8c; border-color: #e83e8c; color: white; }
+
+[data-theme='dark'] .reaction-button.inspiracion.active {
+    color: #111111;
 }

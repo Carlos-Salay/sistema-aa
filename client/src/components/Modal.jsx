@@ -1,32 +1,26 @@
-// client/src/components/Modal.jsx
 import React from 'react';
+import { FaTimes } from 'react-icons/fa';
 
-function Modal({
-  isOpen,
-  onClose,
-  title,
-  children
-}) {
+function Modal({ isOpen, onClose, title, children }) {
   if (!isOpen) {
-    return null; // No renderiza nada si no está abierto
+    return null;
   }
 
   return (
-    <div className = "modal-overlay" >
-    <div className = "modal-content" >
-    <h2 className = "modal-title" > {
-      title
-    } </h2>
-    <div className = "modal-body" > {
-      children
-    } </div>
-    <div className = "modal-footer" >
-    <button onClick = {
-      onClose
-    }
-    className = "modal-close-button" > Aceptar </button>
-    </div>
-    </div>
+    // El overlay es el fondo oscuro semitransparente
+    <div className="modal-overlay" onClick={onClose}>
+      {/* Detenemos la propagación para que al hacer clic en el contenido no se cierre */}
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2 className="modal-title">{title}</h2>
+          <button onClick={onClose} className="modal-close-button">
+            <FaTimes />
+          </button>
+        </div>
+        <div className="modal-body">
+          {children}
+        </div>
+      </div>
     </div>
   );
 }

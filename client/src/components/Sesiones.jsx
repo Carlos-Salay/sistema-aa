@@ -1,13 +1,10 @@
-// client/src/components/Sesiones.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaCalendarPlus, FaListAlt } from 'react-icons/fa';
+import { FaCalendarPlus, FaListAlt, FaBook, FaCalendarAlt, FaMapMarkerAlt, FaAlignLeft, FaChevronDown } from 'react-icons/fa';
 
 function Sesiones() {
   const [sesiones, setSesiones] = useState([]);
-  const [ubicaciones, setUbicaciones] = useState([]); // Nuevo estado para las ubicaciones
-  
-  // Añadimos los nuevos campos al estado del formulario
+  const [ubicaciones, setUbicaciones] = useState([]);
   const [formData, setFormData] = useState({
     tema: '',
     fecha_hora: '',
@@ -17,26 +14,28 @@ function Sesiones() {
   const [error, setError] = useState('');
   const [mensaje, setMensaje] = useState('');
 
-  // Carga tanto las sesiones como las ubicaciones al iniciar
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Pedimos la lista de sesiones
-        const sesionesRes = await fetch('http://localhost:4000/api/sesiones');
-        const sesionesData = await sesionesRes.json();
-        setSesiones(sesionesData);
+  // --- LÓGICA DE DATOS (NO HAY CAMBIOS AQUÍ) ---
+  const fetchData = async () => {
+    try {
+      const [sesionesRes, ubicacionesRes] = await Promise.all([
+        fetch('http://localhost:4000/api/sesiones'),
+        fetch('http://localhost:4000/api/ubicaciones')
+      ]);
+      const sesionesData = await sesionesRes.json();
+      const ubicacionesData = await ubicacionesRes.json();
+      
+      setSesiones(sesionesData);
+      setUbicaciones(ubicacionesData);
 
-        // Pedimos la lista de ubicaciones
-        const ubicacionesRes = await fetch('http://localhost:4000/api/ubicaciones'); // Asumimos que esta ruta existirá
-        const ubicacionesData = await ubicacionesRes.json();
-        setUbicaciones(ubicacionesData);
-        if (ubicacionesData.length > 0) {
-          setFormData(prev => ({...prev, id_ubicacion: ubicacionesData[0].id_ubicacion}));
-        }
-      } catch (err) {
-        setError("No se pudieron cargar los datos iniciales.");
+      if (ubicacionesData.length > 0 && !formData.id_ubicacion) {
+        setFormData(prev => ({...prev, id_ubicacion: ubicacionesData[0].id_ubicacion}));
       }
-    };
+    } catch (err) {
+      setError("No se pudieron cargar los datos iniciales.");
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -59,19 +58,17 @@ function Sesiones() {
         throw new Error(data.message || 'Error al crear la sesión.');
       }
       setMensaje('¡Sesión creada con éxito!');
-      setFormData({ tema: '', fecha_hora: '', id_ubicacion: ubicaciones[0]?.id_ubicacion || '', descripcion: '' });
-      fetchSesiones();
+      setFormData({ 
+        tema: '', 
+        fecha_hora: '', 
+        id_ubicacion: ubicaciones[0]?.id_ubicacion || '', 
+        descripcion: '' 
+      });
+      fetchData();
     } catch (err) {
       setError(err.message);
     }
   };
-
-  // Función para recargar solo las sesiones
-  const fetchSesiones = async () => {
-    const response = await fetch('http://localhost:4000/api/sesiones');
-    const data = await response.json();
-    setSesiones(data);
-  }
 
   return (
     <div>
@@ -79,66 +76,75 @@ function Sesiones() {
         <FaCalendarPlus className="page-logo-icon" />
         Gestión de Sesiones
       </h1>
-      <div className="content-section">
-        <h2>Crear Nueva Sesión</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="tema">Tema de la Sesión:</label>
-            <input type="text" id="tema" name="tema" value={formData.tema} onChange={handleChange} required />
+
+      {/* Usamos los mismos contenedores que el login para centrar la tarjeta */}
+      <div className="login-page-container" style={{ minHeight: 'auto', padding: '0 0 40px 0' }}>
+        <div className="login-card-split" style={{ maxWidth: '700px', display: 'block' }}>
+          <div className="login-form-section">
+            <h2 className="login-title-split">Crear Nueva Sesión</h2>
+            <form onSubmit={handleSubmit}>
+              <div className="input-group">
+                <FaBook className="input-icon" />
+                <input type="text" name="tema" placeholder="Tema de la Sesión" value={formData.tema} onChange={handleChange} required />
+              </div>
+
+              <div className="input-group">
+                <FaCalendarAlt className="input-icon" />
+                <input type="datetime-local" name="fecha_hora" value={formData.fecha_hora} onChange={handleChange} required />
+              </div>
+
+              <div className="input-group select-group">
+                <FaMapMarkerAlt className="input-icon" />
+                <select name="id_ubicacion" value={formData.id_ubicacion} onChange={handleChange}>
+                  {ubicaciones.map(u => (
+                    <option key={u.id_ubicacion} value={u.id_ubicacion}>{u.nombre}</option>
+                  ))}
+                </select>
+                <FaChevronDown className="select-arrow" />
+              </div>
+
+              <div className="input-group textarea-group">
+                <FaAlignLeft className="input-icon" />
+                <textarea name="descripcion" placeholder="Descripción (opcional)" value={formData.descripcion} onChange={handleChange} rows="4"></textarea>
+              </div>
+
+              <button type="submit" className="login-button-primary">
+                <span>Crear Sesión</span>
+              </button>
+            </form>
+            {mensaje && <p className="message-success" style={{marginTop: '20px'}}>{mensaje}</p>}
+            {error && <p className="message-error" style={{marginTop: '20px'}}>{error}</p>}
           </div>
-          <div className="form-group">
-            <label htmlFor="fecha_hora">Fecha y Hora:</label>
-            <input type="datetime-local" id="fecha_hora" name="fecha_hora" value={formData.fecha_hora} onChange={handleChange} required />
-          </div>
-          
-          {/* --- NUEVOS CAMPOS AÑADIDOS --- */}
-          <div className="form-group">
-            <label htmlFor="id_ubicacion">Ubicación:</label>
-            <select id="id_ubicacion" name="id_ubicacion" value={formData.id_ubicacion} onChange={handleChange}>
-              {ubicaciones.map(u => (
-                <option key={u.id_ubicacion} value={u.id_ubicacion}>{u.nombre}</option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="descripcion">Descripción (opcional):</label>
-            <textarea id="descripcion" name="descripcion" value={formData.descripcion} onChange={handleChange} rows="3"></textarea>
-          </div>
-          
-          <button type="submit">Crear Sesión</button>
-        </form>
-        {mensaje && <p className="message-success">{mensaje}</p>}
-        {error && <p className="message-error">{error}</p>}
+        </div>
       </div>
 
-      <div className="content-section" style={{ marginTop: '30px' }}>
-        <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <FaListAlt style={{ color: 'var(--primary-green)' }} /> Sesiones Programadas
-        </h2>
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Tema</th>
-              <th>Fecha y Hora</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sesiones.map((sesion) => (
-              <tr key={sesion.id_sesion}>
-                <td>{sesion.id_sesion}</td>
-                <td>{sesion.tema}</td>
-                <td>{new Date(sesion.fecha_hora).toLocaleString('es-GT')}</td>
-                <td>
-                  <Link to={`/sesiones/${sesion.id_sesion}/asistencia`}>
-                    <button>Asistencia</button>
-                  </Link>
-                </td>
+      {/* Tarjeta para Sesiones Programadas */}
+      <div className="content-section">
+        <h2 className="section-title"><FaListAlt /> Sesiones Programadas</h2>
+        <div className="table-responsive">
+          <table className="miembros-table">
+            <thead>
+              <tr>
+                <th>Tema</th>
+                <th>Fecha y Hora</th>
+                <th style={{textAlign: 'center'}}>Acciones</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {sesiones.map((sesion) => (
+                <tr key={sesion.id_sesion}>
+                  <td>{sesion.tema}</td>
+                  <td>{new Date(sesion.fecha_hora).toLocaleString('es-GT', { dateStyle: 'short', timeStyle: 'short' })}</td>
+                  <td style={{textAlign: 'center'}}>
+                    <Link to={`/sesiones/${sesion.id_sesion}/asistencia`}>
+                      <button><span>Asistencia</span></button>
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
