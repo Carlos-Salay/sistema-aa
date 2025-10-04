@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaUsers, FaCheck } from 'react-icons/fa';
+import { API_URL } from '../config.js';
 
 function Asistencia() {
   const { id } = useParams();
@@ -17,9 +18,9 @@ function Asistencia() {
     const fetchData = async () => {
       try {
         const [miembrosRes, asistenciaRes, sessionRes] = await Promise.all([
-          fetch('http://localhost:4000/api/miembros'),
-          fetch(`http://localhost:4000/api/asistencia/${id}`),
-          fetch(`http://localhost:4000/api/sesiones/${id}`)
+          fetch(`${API_URL}/api/miembros`),
+          fetch(`${API_URL}/api/asistencia/${id}`),
+          fetch(`${API_URL}/api//sesiones/${id}`)
         ]);
 
         if (!miembrosRes.ok || !asistenciaRes.ok || !sessionRes.ok) {
@@ -62,7 +63,7 @@ function Asistencia() {
     setError('');
     setMensaje('Guardando...');
     try {
-      const response = await fetch('http://localhost:4000/api/asistencia', {
+      const response = await fetch('${API_URL}/api/asistencia/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

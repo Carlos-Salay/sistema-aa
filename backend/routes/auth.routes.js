@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { pool } = require('../db');
 const crypto = require('crypto');
+const config = require('../config');
 
 
 const router = Router();
@@ -79,7 +80,7 @@ router.post('/login', async (req, res) => {
       rol: userRole,
     };
     
-    const token = jwt.sign(payload, 'TU_PALABRA_SECRETA_SUPER_SEGURA', {
+      const token = jwt.sign(payload, config.JWT_SECRET, {
       expiresIn: '8h',
     });
 

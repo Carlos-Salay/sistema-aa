@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaUsers, FaCheckCircle, FaStar, FaCalendarAlt } from 'react-icons/fa';
 import AsistenciaChart from './AsistenciaChart';
+import { API_URL } from '../config.js';
 
 function Dashboard() {
   const [stats, setStats] = useState({
@@ -15,7 +16,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/stats/dashboard');
+        const response = await fetch(`${API_URL}/api/stats/dashboard`);
         if (!response.ok) {
           throw new Error('No se pudieron cargar las estadísticas.');
         }

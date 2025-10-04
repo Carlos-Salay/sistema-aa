@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
 import { useTheme } from '../context/ThemeContext.jsx'; // 1. Importar el hook del tema
+import { API_URL } from '../config.js';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
@@ -22,7 +23,7 @@ function AsistenciaChart() {
   useEffect(() => {
     const fetchChartData = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/stats/asistencia-mensual');
+        const response = await fetch('${API_URL}/api/stats/asistencia-mensual');
         const data = await response.json();
         
         setChartData({

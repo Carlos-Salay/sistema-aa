@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { API_URL } from '../config.js';
 import { FaCalendarPlus, FaListAlt, FaBook, FaCalendarAlt, FaMapMarkerAlt, FaAlignLeft, FaChevronDown } from 'react-icons/fa';
 
 function Sesiones() {
@@ -18,8 +19,8 @@ function Sesiones() {
   const fetchData = async () => {
     try {
       const [sesionesRes, ubicacionesRes] = await Promise.all([
-        fetch('http://localhost:4000/api/sesiones'),
-        fetch('http://localhost:4000/api/ubicaciones')
+        fetch(`${API_URL}/api/sesiones`),
+        fetch(`${API_URL}/api/ubicaciones`)
       ]);
       const sesionesData = await sesionesRes.json();
       const ubicacionesData = await ubicacionesRes.json();
@@ -48,7 +49,7 @@ function Sesiones() {
     setError('');
     setMensaje('');
     try {
-      const response = await fetch('http://localhost:4000/api/sesiones', {
+      const response = await fetch(`${API_URL}/api/sesiones`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

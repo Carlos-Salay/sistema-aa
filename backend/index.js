@@ -2,6 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const { testDbConnection } = require('./db');
+const config = require('./config'); // <-- AÑADIDO: Importar la configuración
 
 // 2. Importación de Todos los Archivos de Rutas
 const miembroRoutes = require('./routes/miembros.routes.js');
@@ -15,7 +16,7 @@ const rolesRoutes = require('./routes/roles.routes.js');
 const mensajesRoutes = require('./routes/mensajes.routes.js');
 const reportesRoutes = require('./routes/reportes.routes.js');
 const ubicacionesRoutes = require('./routes/ubicaciones.routes.js');
-const testimoniosRoutes = require('./routes/testimonios.routes.js'); // <-- AÑADIDO
+const testimoniosRoutes = require('./routes/testimonios.routes.js');
 
 // 3. Inicialización de la Aplicación Express
 const app = express();
@@ -36,13 +37,13 @@ app.use('/api/roles', rolesRoutes);
 app.use('/api/mensajes', mensajesRoutes);
 app.use('/api/reportes', reportesRoutes);
 app.use('/api/ubicaciones', ubicacionesRoutes);
-app.use('/api/testimonios', testimoniosRoutes); // <-- AÑADIDO
+app.use('/api/testimonios', testimoniosRoutes);
 
 // 6. Definición del Puerto
-const PORT = process.env.PORT || 4000;
+const PORT = config.PORT; // <-- CAMBIO: Usar el puerto desde la config
 
 // 7. Iniciar el Servidor
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);
-  testDbConnection(); 
+  testDbConnection();
 });

@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useTheme } from '../context/ThemeContext.jsx'; // Importar hook de tema
 import { FaUser, FaLock, FaEye, FaEyeSlash, FaSun, FaMoon } from 'react-icons/fa'; // Importar nuevos iconos
 import loginImage from '../logos/login.png';
+import { API_URL } from '../config.js';
 
 function Login() {
   const [credencial, setCredencial] = useState('');
@@ -18,7 +19,7 @@ function Login() {
     e.preventDefault();
     setError('');
     try {
-      const response = await fetch('http://localhost:4000/api/auth/login', {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ correo_electronico: credencial, password: password }),

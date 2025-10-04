@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaCalendarAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import Modal from './Modal.jsx'; // 1. Importamos nuestro componente Modal
+import { API_URL } from '../config.js';
 
 function Calendario() {
   const [sesiones, setSesiones] = useState([]);
@@ -13,7 +14,7 @@ function Calendario() {
   useEffect(() => {
     const fetchSesiones = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/sesiones');
+        const response = await fetch('${API_URL}/api/sesiones');
         if (!response.ok) throw new Error('No se pudieron cargar las sesiones.');
         const data = await response.json();
         const formattedSesiones = data.map(s => ({...s, fecha_hora: new Date(s.fecha_hora)}));

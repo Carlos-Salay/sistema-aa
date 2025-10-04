@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { FaComments, FaPaperPlane } from 'react-icons/fa';
+import { API_URL } from '../config.js';
 
 function ChatView() {
   const { otroMiembroId } = useParams();
@@ -23,7 +24,7 @@ function ChatView() {
 
     const fetchMessages = async () => {
       try {
-        const response = await fetch(`http://localhost:4000/api/mensajes/${user.id}/${otroMiembroId}`);
+        const response = await fetch(`${API_URL}/api/mensajes/${user.id}/${otroMiembroId}`);
         if (!response.ok) throw new Error("No se pudo cargar el historial de mensajes.");
         const data = await response.json();
         setMensajes(data);
@@ -36,7 +37,7 @@ function ChatView() {
     const fetchPartnerInfo = async () => {
       try {
         // Usamos la ruta de perfil que ya existe para obtener los datos del otro miembro
-        const response = await fetch(`http://localhost:4000/api/miembros/${otroMiembroId}`);
+        const response = await fetch(`${API_URL}/api/miembros/${otroMiembroId}`);
         const data = await response.json();
         setConversacionCon(data);
       } catch (err) {
@@ -58,7 +59,7 @@ function ChatView() {
     if (!nuevoMensaje.trim() || !user || !conversacionCon?.id_miembro) return;
 
     try {
-      const response = await fetch('http://localhost:4000/api/mensajes', {
+      const response = await fetch('${API_URL}/api/mensajes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

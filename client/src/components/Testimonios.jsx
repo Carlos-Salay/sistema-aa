@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { FaPenSquare, FaHandHoldingHeart, FaLightbulb, FaHeart, FaTrash } from 'react-icons/fa';
 import Modal from './Modal.jsx';
+import { API_URL } from '../config.js';
 
 function Testimonios() {
   const { user } = useAuth();
@@ -15,7 +16,7 @@ function Testimonios() {
     if (!user) return;
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:4000/api/testimonios/${user.id_miembro}`);
+      const response = await fetch(`${API_URL}/api/testimonios/${user.id_miembro}`);
       const data = await response.json();
       setTestimonios(data);
     } catch (err) {
@@ -37,7 +38,7 @@ function Testimonios() {
     e.preventDefault();
     if (!newTestimonio.titulo.trim() || !newTestimonio.contenido.trim()) return;
     try {
-      await fetch('http://localhost:4000/api/testimonios', {
+      await fetch('${API_URL}/api/testimonios', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...newTestimonio, id_miembro: user.id_miembro }),
@@ -77,7 +78,7 @@ function Testimonios() {
       })
     );
 
-    fetch(`http://localhost:4000/api/testimonios/${idTestimonio}/reaccionar`, {
+    fetch(`${API_URL}/api/testimonios/${idTestimonio}/reaccionar`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id_miembro: user.id_miembro, rol: user.rol, tipo_reaccion: tipoReaccion }),
@@ -87,7 +88,7 @@ function Testimonios() {
   const handleDeleteTestimonio = async () => {
     if (!modalDelete.testimonioId) return;
     try {
-      await fetch(`http://localhost:4000/api/testimonios/${modalDelete.testimonioId}`, {
+      await fetch(`${API_URL}/api/testimonios/${modalDelete.testimonioId}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id_miembro: user.id_miembro, rol: user.rol }),

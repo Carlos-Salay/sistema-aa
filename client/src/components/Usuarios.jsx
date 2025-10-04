@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaUserShield, FaUser, FaEnvelope, FaLock, FaCheckCircle, FaTimesCircle, FaChevronDown } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext.jsx';
 import loginImage from '../logos/registro.png';
+import { API_URL } from '../config.js';
 
 // Requisitos de contraseña
 const passwordRequirements = [
@@ -34,7 +35,7 @@ function Usuarios() {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/roles');
+        const response = await fetch('${API_URL}/api/roles');
         const data = await response.json();
         setRoles(data);
         if (data.length > 0) {
@@ -72,7 +73,7 @@ function Usuarios() {
     }
 
     try {
-      const response = await fetch('http://localhost:4000/api/usuarios', {
+      const response = await fetch('${API_URL}/api/usuarios', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

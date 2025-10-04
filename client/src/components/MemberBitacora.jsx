@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { FaBookMedical, FaFeatherAlt } from 'react-icons/fa';
+import { API_URL } from '../config.js';
 
 function MemberBitacora() {
   const { user } = useAuth();
@@ -15,7 +16,7 @@ function MemberBitacora() {
     const fetchEntradas = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:4000/api/bitacora/${user.id}`);
+        const response = await fetch(`${API_URL}/api/bitacora/${user.id}`);
         const data = await response.json();
         setEntradas(data);
       } catch (err) {
@@ -31,7 +32,7 @@ function MemberBitacora() {
     e.preventDefault();
     if (!nuevaEntrada.trim()) return;
     try {
-      const response = await fetch('http://localhost:4000/api/bitacora', {
+      const response = await fetch('${API_URL}/api/bitacora', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id_miembro: user.id, reflexion: nuevaEntrada }),

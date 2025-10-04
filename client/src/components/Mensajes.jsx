@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { FaComments, FaUserFriends } from 'react-icons/fa';
+import { API_URL } from '../config.js';
 
 function MemberMensajes() {
   const { user } = useAuth();
@@ -13,7 +14,7 @@ function MemberMensajes() {
     if (!user) return;
     const fetchConversaciones = async () => {
       try {
-        const response = await fetch(`http://localhost:4000/api/mensajes/conversaciones/${user.id}`);
+        const response = await fetch(`${API_URL}/api/mensajes/conversaciones/${user.id}`);
         if (!response.ok) throw new Error('No se pudieron cargar tus conversaciones.');
         const data = await response.json();
         setConversaciones(data);

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { FaUsers, FaAward, FaKey, FaUserSlash, FaUserCheck, FaExclamationTriangle, FaUserFriends, FaChevronDown, FaLock, FaCheckCircle, FaTimesCircle, FaPlus, FaUser, FaCalendarAlt } from 'react-icons/fa';
 import Modal from './Modal.jsx';
+import { API_URL } from '../config.js';
 
 // Requisitos de la contraseña (para el modal)
 const passwordRequirements = [
@@ -50,7 +51,7 @@ function Miembros() {
     const estado = viendoInactivos ? 'inactivos' : 'activos';
     try {
       setLoading(true);
-      const res = await fetch(`http://localhost:4000/api/miembros?estado=${estado}`);
+      const res = await fetch(`${API_URL}/api/miembros?estado=${estado}`);
       if (!res.ok) throw new Error('No se pudo obtener la lista de miembros.');
       const data = await res.json();
       setMiembros(data);
@@ -62,7 +63,7 @@ function Miembros() {
 
   const handlePasoChange = async (miembroId, nuevoPaso) => {
     try {
-      const res = await fetch(`http://localhost:4000/api/miembros/${miembroId}/paso`, {
+      const res = await fetch(`${API_URL}/api/miembros/${miembroId}/paso`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ paso_actual: nuevoPaso }),
       });
       if (!res.ok) throw new Error('No se pudo guardar el paso.');
@@ -83,7 +84,7 @@ function Miembros() {
     }
 
     try {
-      const res = await fetch(`http://localhost:4000/api/miembros`, {
+      const res = await fetch(`${API_URL}/api/miembros`, {
         method: 'POST',
         headers: { // 2. Añadimos el token a las cabeceras
           'Content-Type': 'application/json',
@@ -118,7 +119,7 @@ function Miembros() {
     }
 
     try {
-      await fetch(`http://localhost:4000/api/miembros/${miembro.id_miembro}/cambiar-password`, {
+      await fetch(`${API_URL}/api/miembros/${miembro.id_miembro}/cambiar-password`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: newPassword }),
       });
       setModalPassword({ isOpen: false, miembro: null, newPassword: '', confirmPassword: '' });
@@ -132,7 +133,7 @@ function Miembros() {
     if (!modalBaja.miembro) return;
     const nuevoEstado = modalBaja.activar ? 1 : 2;
     try {
-      await fetch(`http://localhost:4000/api/miembros/${modalBaja.miembro.id_miembro}/estado`, {
+      await fetch(`${API_URL}/api/miembros/${modalBaja.miembro.id_miembro}/estado`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id_estado: nuevoEstado }),
       });
       setModalBaja({ isOpen: false, miembro: null, activar: false });
@@ -143,7 +144,7 @@ function Miembros() {
   const handleGuardarPadrino = async () => {
     if (!modalPadrino.miembro) return;
     try {
-      await fetch(`http://localhost:4000/api/miembros/${modalPadrino.miembro.id_miembro}/padrino`, {
+      await fetch(`${API_URL}/api/miembros/${modalPadrino.miembro.id_miembro}/padrino`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ idPadrino: modalPadrino.padrinoId }),
       });
       setModalPadrino({ isOpen: false, miembro: null, padrinoId: '' });
@@ -154,7 +155,7 @@ function Miembros() {
   const handleRegistrarRecaida = async () => {
     if (!modalRecaida.miembro) return;
     try {
-      await fetch(`http://localhost:4000/api/miembros/${modalRecaida.miembro.id_miembro}/recaida`, { method: 'PUT' });
+      await fetch(`${API_URL}/api/miembros/${modalRecaida.miembro.id_miembro}/recaida`, { method: 'PUT' });
       setModalRecaida({ isOpen: false, miembro: null });
       fetchMiembros();
     } catch (err) { alert("No se pudo registrar la recaída."); }

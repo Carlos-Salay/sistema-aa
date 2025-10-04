@@ -6,6 +6,7 @@ import { Doughnut } from 'react-chartjs-2';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import html2canvas from 'html2canvas';
+import { API_URL } from '../config.js';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -20,7 +21,7 @@ function Reportes() {
   useEffect(() => {
     const fetchMiembros = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/miembros');
+        const response = await fetch('${API_URL}/api/miembros');
         const data = await response.json();
         setMiembros(data);
       } catch (err) {

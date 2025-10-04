@@ -1,6 +1,7 @@
 // client/src/components/Bitacora.jsx
 import React, { useState, useEffect } from 'react';
 import { FaBook } from 'react-icons/fa';
+import { API_URL } from '../config.js';
 
 function Bitacora() {
   const [miembros, setMiembros] = useState([]);
@@ -14,7 +15,7 @@ function Bitacora() {
   useEffect(() => {
     const fetchMiembros = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/miembros?estado=todos');
+        const response = await fetch('${API_URL}/api/miembros?estado=todos');
         const data = await response.json();
         setMiembros(data);
       } catch (err) {
@@ -35,7 +36,7 @@ function Bitacora() {
     const fetchEntradas = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:4000/api/bitacora/${miembroSeleccionado}`);
+        const response = await fetch(`${API_URL}/api/bitacora/${miembroSeleccionado}`);
         const data = await response.json();
         setEntradas(data);
       } catch (err) {
@@ -53,7 +54,7 @@ function Bitacora() {
     if (!nuevaEntrada.trim()) return;
 
     try {
-      const response = await fetch('http://localhost:4000/api/bitacora', {
+      const response = await fetch('${API_URL}/api/bitacora', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
