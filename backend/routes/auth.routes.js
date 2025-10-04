@@ -3,6 +3,9 @@ const { Router } = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { pool } = require('../db');
+const crypto = require('crypto');
+const config = require('../config');
+
 
 const router = Router();
 
@@ -41,7 +44,7 @@ router.post('/login', async (req, res) => {
     } else {
       // Es un Miembro Anónimo (buscamos por código confidencial)
       const memberResult = await pool.query(
-        `SELECT m.*, a.id_padrino, ahijado.id_miembro as id_ahijado
+        `SELECT m.id_miembro, m.alias, m.codigo_confidencial, m.password_hash, a.id_padrino, ahijado.id_miembro as id_ahijado
          FROM miembros m 
          LEFT JOIN apoyo a ON m.id_miembro = a.id_ahijado AND a.fecha_fin IS NULL
          LEFT JOIN apoyo ahijado_rel ON m.id_miembro = ahijado_rel.id_padrino AND ahijado_rel.fecha_fin IS NULL
@@ -77,7 +80,7 @@ router.post('/login', async (req, res) => {
       rol: userRole,
     };
     
-    const token = jwt.sign(payload, 'TU_PALABRA_SECRETA_SUPER_SEGURA', {
+      const token = jwt.sign(payload, config.JWT_SECRET, {
       expiresIn: '8h',
     });
 
@@ -89,6 +92,7 @@ router.post('/login', async (req, res) => {
         id: userId,
         alias: userName, // Cambiamos 'nombre' por 'alias' para estandarizar
         rol: userRole,
+        id_miembro: userId, // Para miembros, es su propio ID. Para admins, no se usará en el frontend por ahora.
         idOtroChat: idOtroChat, // <-- AÑADIDO: ID del padrino o ahijado
       },
     });

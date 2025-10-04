@@ -1,32 +1,31 @@
-// db.js
+// backend/db.js
 
-// 1. Cargar la librería de PostgreSQL
 const { Pool } = require('pg');
+const config = require('./config'); // Importamos la configuración central
 
-// 2. Cargar las variables de entorno
-require('dotenv').config();
-
-// 3. Crear el "pool" de conexiones
-// Un pool es más eficiente que una conexión única para un servidor web
 const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
+  user: config.DB_USER,
+  host: config.DB_HOST,
+  database: config.DB_DATABASE,
+  password: config.DB_PASSWORD,
+  port: config.DB_PORT,
+  // Configuración SSL necesaria para la conexión en producción (Render)
+  ssl: config.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
 
-// 4. (Opcional) Función para probar la conexión
+/**
+ * Función para verificar la conexión con la base de datos.
+ */
 async function testDbConnection() {
   try {
-    await pool.query('SELECT NOW()'); // Consulta muy simple para probar
+    await pool.query('SELECT NOW()');
     console.log('✅ Conexión con la base de datos exitosa.');
   } catch (error) {
     console.error('❌ Error al conectar con la base de datos:', error);
   }
 }
 
-// 5. Exportar el pool para poder usarlo en otras partes de la aplicación
+// Exportamos tanto el pool de conexiones como la función de prueba
 module.exports = {
   pool,
   testDbConnection,

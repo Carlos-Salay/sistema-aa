@@ -1,11 +1,12 @@
 const { Router } = require('express');
 const { pool } = require('../db');
 const crypto = require('crypto');
+const config = require('../config');
 
 const router = Router();
 
 // --- Configuración de Cifrado ---
-const ENCRYPTION_KEY = '123456789012345678901234567890ab'; // Clave de 32 bytes
+const ENCRYPTION_KEY = config.ENCRYPTION_KEY; 
 const IV_LENGTH = 16; 
 
 function encrypt(text) {

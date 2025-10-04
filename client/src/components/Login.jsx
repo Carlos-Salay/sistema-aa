@@ -1,22 +1,25 @@
-// client/src/components/Login.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import logoLogin from '../logos/logo.png';
+import { useTheme } from '../context/ThemeContext.jsx'; // Importar hook de tema
+import { FaUser, FaLock, FaEye, FaEyeSlash, FaSun, FaMoon } from 'react-icons/fa'; // Importar nuevos iconos
+import loginImage from '../logos/login.png';
+import { API_URL } from '../config.js';
 
 function Login() {
   const [credencial, setCredencial] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // Estado para visibilidad de contraseña
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { theme, toggleTheme } = useTheme(); // Hook para cambiar tema
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     try {
-      // El backend ahora entiende que este campo puede ser un correo o un código
-      const response = await fetch('http://localhost:4000/api/auth/login', {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ correo_electronico: credencial, password: password }),
@@ -33,39 +36,64 @@ function Login() {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <img src={logoLogin} alt="Logo de Inicio de Sesión" className="login-logo" />
-        <h2 className="login-title">Acceso a ClaraVía</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            {/* --- CAMBIO DE TEXTO AQUÍ --- */}
-            <label htmlFor="credencial">Usuario / Código Confidencial:</label>
-            <input
-              type="text" // Cambiado a 'text' para aceptar códigos
-              id="credencial"
-              name="credencial"
-              autoComplete="username"
-              value={credencial}
-              onChange={(e) => setCredencial(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="password">Contraseña:</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <button type="submit">Ingresar</button>
-        </form>
-        {error && <p className="message-error">{error}</p>}
+    <div className="login-page-container">
+      <div className="login-card-split">
+        
+        {/* === Columna Izquierda: Formulario === */}
+        <div className="login-form-section">
+          <button onClick={toggleTheme} className="theme-toggle-button-login" title="Cambiar tema">
+            {theme === 'light' ? <FaMoon /> : <FaSun />}
+          </button>
+
+          <h2 className="login-title-split">Login</h2>
+          <p className="login-subtitle">Bienvenido de nuevo a ClaraVía.</p>
+          
+          <form onSubmit={handleSubmit}>
+            <div className="input-group">
+              <FaUser className="input-icon" />
+              <input
+                type="text"
+                placeholder="Usuario / Código Confidencial"
+                autoComplete="username"
+                value={credencial}
+                onChange={(e) => setCredencial(e.target.value)}
+                required
+              />
+            </div>
+            
+            <div className="input-group">
+              <FaLock className="input-icon" />
+              <input
+                type={showPassword ? 'text' : 'password'} // Tipo de input dinámico
+                placeholder="Contraseña"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              {/* Botón para mostrar/ocultar contraseña */}
+              <div
+                className="password-toggle-icon"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </div>
+            </div>
+            
+            <button type="submit" className="login-button-primary">
+              <span>Iniciar Sesión</span>
+            </button>
+          </form>
+          {error && <p className="message-error" style={{marginTop: '15px'}}>{error}</p>}
+        </div>
+
+        {/* === Columna Derecha: Imagen Decorativa === */}
+        <div className="login-image-section-blue">
+            <div className="image-wrapper">
+                <img src={loginImage} alt="Persona organizando" className="login-decorative-image"/>
+            </div>
+        </div>
+
       </div>
     </div>
   );

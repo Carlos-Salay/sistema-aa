@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { FaPenSquare, FaHandHoldingHeart, FaLightbulb, FaHeart, FaTrash } from 'react-icons/fa';
-import Modal from './Modal.jsx'; // Usaremos nuestro modal de confirmación
+import Modal from './Modal.jsx';
+import { API_URL } from '../config.js';
 
 function Testimonios() {
   const { user } = useAuth();
@@ -9,13 +10,13 @@ function Testimonios() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [newTestimonio, setNewTestimonio] = useState({ titulo: '', contenido: '' });
-  const [userReactions, setUserReactions] = useState({});
   const [modalDelete, setModalDelete] = useState({ isOpen: false, testimonioId: null });
 
   const fetchTestimonios = async () => {
+    if (!user) return;
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:4000/api/testimonios');
+      const response = await fetch(`${API_URL}/api/testimonios/${user.id_miembro}`);
       const data = await response.json();
       setTestimonios(data);
     } catch (err) {
@@ -27,7 +28,7 @@ function Testimonios() {
 
   useEffect(() => {
     fetchTestimonios();
-  }, []);
+  }, [user]);
 
   const handleInputChange = (e) => {
     setNewTestimonio({ ...newTestimonio, [e.target.name]: e.target.value });
@@ -35,11 +36,12 @@ function Testimonios() {
 
   const handlePostTestimonio = async (e) => {
     e.preventDefault();
+    if (!newTestimonio.titulo.trim() || !newTestimonio.contenido.trim()) return;
     try {
-      await fetch('http://localhost:4000/api/testimonios', {
+      await fetch('${API_URL}/api/testimonios', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...newTestimonio, id_miembro: user.id }),
+        body: JSON.stringify({ ...newTestimonio, id_miembro: user.id_miembro }),
       });
       setNewTestimonio({ titulo: '', contenido: '' });
       fetchTestimonios();
@@ -48,69 +50,85 @@ function Testimonios() {
     }
   };
 
-  const handleReaccionar = async (idTestimonio, tipoReaccion) => {
-      const newReactions = { ...userReactions };
-      if (newReactions[idTestimonio] === tipoReaccion) {
-        delete newReactions[idTestimonio];
-      } else {
-        newReactions[idTestimonio] = tipoReaccion;
-      }
-      setUserReactions(newReactions);
-      try {
-        await fetch(`http://localhost:4000/api/testimonios/${idTestimonio}/reaccionar`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id_miembro: user.id, tipo_reaccion: tipoReaccion }),
-        });
-        fetchTestimonios();
-      } catch (err) {
-        console.error("Error al reaccionar:", err);
-      }
+  const handleReaccionar = (idTestimonio, tipoReaccion) => {
+    setTestimonios(currentTestimonios => 
+      currentTestimonios.map(t => {
+        if (t.id_testimonio === idTestimonio) {
+          const yaReaccionado = t.reaccion_usuario;
+          const mismaReaccion = yaReaccionado === tipoReaccion;
+          
+          let nuevosApoyos = parseInt(t.apoyos, 10);
+          let nuevasInspiraciones = parseInt(t.inspiraciones, 10);
+          let nuevasGratitudes = parseInt(t.gratitudes, 10);
+
+          if (yaReaccionado) {
+            if (yaReaccionado === 'apoyo') nuevosApoyos--;
+            if (yaReaccionado === 'inspiracion') nuevasInspiraciones--;
+            if (yaReaccionado === 'gratitud') nuevasGratitudes--;
+          }
+          if (!mismaReaccion) {
+            if (tipoReaccion === 'apoyo') nuevosApoyos++;
+            if (tipoReaccion === 'inspiracion') nuevasInspiraciones++;
+            if (tipoReaccion === 'gratitud') nuevasGratitudes++;
+          }
+          
+          return { ...t, reaccion_usuario: mismaReaccion ? null : tipoReaccion, apoyos: nuevosApoyos, inspiraciones: nuevasInspiraciones, gratitudes: nuevasGratitudes };
+        }
+        return t;
+      })
+    );
+
+    fetch(`${API_URL}/api/testimonios/${idTestimonio}/reaccionar`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id_miembro: user.id_miembro, rol: user.rol, tipo_reaccion: tipoReaccion }),
+    }).catch(() => fetchTestimonios());
   };
 
-  // --- NUEVA FUNCIÓN PARA ELIMINAR TESTIMONIO ---
   const handleDeleteTestimonio = async () => {
     if (!modalDelete.testimonioId) return;
     try {
-      await fetch(`http://localhost:4000/api/testimonios/${modalDelete.testimonioId}`, {
+      await fetch(`${API_URL}/api/testimonios/${modalDelete.testimonioId}`, {
         method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_miembro: user.id_miembro, rol: user.rol }),
       });
       setModalDelete({ isOpen: false, testimonioId: null });
-      fetchTestimonios(); // Recargamos la lista
-    } catch (err) {
-      alert("No se pudo eliminar el testimonio.");
-    }
+      fetchTestimonios();
+    } catch (err) { alert("No se pudo eliminar el testimonio."); }
   };
 
   return (
     <div>
       <h1 className="page-title"><FaPenSquare className="page-logo-icon" /> Muro de Testimonios</h1>
       
-      {/* FORMULARIO PARA COMPARTIR (SOLO PARA MIEMBROS) */}
-      {user.rol === 'Miembro' && (
+      {user.id_miembro && (
         <div className="content-section">
-          <h2>Comparte tu Historia</h2>
+          <h2 className="section-title">Comparte tu Historia</h2>
           <form onSubmit={handlePostTestimonio}>
             <div className="form-group">
               <label htmlFor="titulo">Título de tu testimonio:</label>
-              <input type="text" name="titulo" value={newTestimonio.titulo} onChange={handleInputChange} required />
+              <input type="text" id="titulo" name="titulo" value={newTestimonio.titulo} onChange={handleInputChange} required />
             </div>
             <div className="form-group">
               <label htmlFor="contenido">Tu historia:</label>
-              <textarea name="contenido" rows="5" value={newTestimonio.contenido} onChange={handleInputChange} required></textarea>
+              <textarea id="contenido" name="contenido" rows="5" value={newTestimonio.contenido} onChange={handleInputChange} required></textarea>
             </div>
-            <button type="submit">Publicar Testimonio</button>
+            <div className="form-actions">
+                <button type="submit"><span>Publicar Testimonio</span></button>
+            </div>
           </form>
         </div>
       )}
 
       <div className="testimonios-list">
-        {loading ? <p>Cargando testimonios...</p> : testimonios.map(t => (
+        {loading && <p>Cargando testimonios...</p>}
+        {error && <p className="message-error">{error}</p>}
+        {!loading && testimonios.map(t => (
           <div key={t.id_testimonio} className="testimonio-card">
             <div className="testimonio-header">
               <h3>{t.titulo}</h3>
-              {/* Lógica para mostrar el botón de eliminar solo al autor */}
-              {(user.id === t.id_miembro || user.rol === 'Administrador') && (
+              {(user.id_miembro === t.id_miembro || user.rol === 'Administrador') && (
                 <button 
                   className="delete-testimonio-btn" 
                   title="Eliminar publicación"
@@ -123,41 +141,29 @@ function Testimonios() {
             <p className="testimonio-autor">Compartido por: <strong>{t.autor}</strong></p>
             <p className="testimonio-contenido">{t.contenido}</p>
             <div className="reaction-bar">
-              <button 
-                onClick={() => handleReaccionar(t.id_testimonio, 'apoyo')} 
-                className={`reaction-button apoyo ${userReactions[t.id_testimonio] === 'apoyo' ? 'active' : ''}`}
-              >
-                <FaHandHoldingHeart /> Te Apoyo ({t.apoyos || 0})
+              <button onClick={() => handleReaccionar(t.id_testimonio, 'apoyo')} className={`reaction-button apoyo ${t.reaccion_usuario === 'apoyo' ? 'active' : ''}`}>
+                <FaHandHoldingHeart /> <span>Te Apoyo ({t.apoyos})</span>
               </button>
-              <button 
-                onClick={() => handleReaccionar(t.id_testimonio, 'inspiracion')} 
-                className={`reaction-button inspiracion ${userReactions[t.id_testimonio] === 'inspiracion' ? 'active' : ''}`}
-              >
-                <FaLightbulb /> Me Inspira ({t.inspiraciones || 0})
+              <button onClick={() => handleReaccionar(t.id_testimonio, 'inspiracion')} className={`reaction-button inspiracion ${t.reaccion_usuario === 'inspiracion' ? 'active' : ''}`}>
+                <FaLightbulb /> <span>Me Inspira ({t.inspiraciones})</span>
               </button>
-              <button 
-                onClick={() => handleReaccionar(t.id_testimonio, 'gratitud')} 
-                className={`reaction-button gratitud ${userReactions[t.id_testimonio] === 'gratitud' ? 'active' : ''}`}
-              >
-                <FaHeart /> Gracias ({t.gratitudes || 0})
+              <button onClick={() => handleReaccionar(t.id_testimonio, 'gratitud')} className={`reaction-button gratitud ${t.reaccion_usuario === 'gratitud' ? 'active' : ''}`}>
+                <FaHeart /> <span>Gracias ({t.gratitudes})</span>
               </button>
             </div>
           </div>
         ))}
       </div>
-      {error && <p className="message-error">{error}</p>}
 
-      {/* --- MODAL DE CONFIRMACIÓN PARA ELIMINAR --- */}
       <Modal 
         isOpen={modalDelete.isOpen} 
         onClose={() => setModalDelete({ isOpen: false, testimonioId: null })}
         title="Confirmar Eliminación"
       >
-        <p>¿Estás seguro de que quieres eliminar esta publicación?</p>
-        <p>Esta acción no se puede deshacer.</p>
-        <div style={{display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '30px'}}>
-            <button onClick={() => setModalDelete({ isOpen: false, testimonioId: null })}>Cancelar</button>
-            <button onClick={handleDeleteTestimonio} className="baja-button-confirm">Sí, eliminar</button>
+        <p>¿Estás seguro de que quieres eliminar esta publicación? Esta acción no se puede deshacer.</p>
+        <div className="modal-actions">
+            <button onClick={() => setModalDelete({ isOpen: false, testimonioId: null })} className="button-secondary"><span>Cancelar</span></button>
+            <button onClick={handleDeleteTestimonio} className="button-danger"><span>Sí, eliminar</span></button>
         </div>
       </Modal>
     </div>

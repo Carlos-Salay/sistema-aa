@@ -47,10 +47,43 @@ router.get('/evaluacion/:id_miembro', async (req, res) => {
        [id_miembro]
     );
 
-    const [totalRes, asistenciasRes, ultimaRes] = await Promise.all([
+    // 4. Obtener datos del perfil del miembro (días sobriedad, paso actual)
+    const perfilMiembroQuery = pool.query(
+      `SELECT 
+        m.fecha_sobriedad,
+        EXTRACT(DAY FROM (NOW() - m.fecha_sobriedad)) AS dias_sobriedad,
+        p_ultimo.paso as paso_actual
+       FROM miembros m
+       LEFT JOIN (
+         SELECT DISTINCT ON (id_miembro) id_miembro, paso
+         FROM progreso ORDER BY id_miembro, fecha DESC, id_progreso DESC
+       ) p_ultimo ON m.id_miembro = p_ultimo.id_miembro
+       WHERE m.id_miembro = $1`,
+       [id_miembro]
+    );
+
+    // 5. Obtener el nombre del padrino del miembro
+    const padrinoQuery = pool.query(
+      `SELECT p.alias as nombre_padrino FROM apoyo a
+       JOIN miembros p ON a.id_padrino = p.id_miembro
+       WHERE a.id_ahijado = $1 AND a.fecha_fin IS NULL`,
+       [id_miembro]
+    );
+
+    // 6. Contar cuántos ahijados tiene este miembro
+    const ahijadosQuery = pool.query(
+      `SELECT COUNT(*) as total_ahijados FROM apoyo
+       WHERE id_padrino = $1 AND fecha_fin IS NULL`,
+       [id_miembro]
+    );
+
+    const [totalRes, asistenciasRes, ultimaRes, perfilRes, padrinoRes, ahijadosRes] = await Promise.all([
       totalSesionesQuery,
       asistenciasMiembroQuery,
-      ultimaAsistenciaQuery
+      ultimaAsistenciaQuery,
+      perfilMiembroQuery,
+      padrinoQuery,
+      ahijadosQuery
     ]);
 
     const totalSesiones = parseInt(totalRes.rows[0].count, 10);
@@ -59,11 +92,20 @@ router.get('/evaluacion/:id_miembro', async (req, res) => {
     // Calculamos el porcentaje, evitando división por cero
     const porcentaje = totalSesiones > 0 ? (asistenciasMiembro / totalSesiones) * 100 : 0;
 
+    const perfil = perfilRes.rows[0] || {};
+    const padrino = padrinoRes.rows[0] || {};
+    const ahijados = ahijadosRes.rows[0] || {};
+
     res.json({
       total_sesiones_trimestre: totalSesiones,
       asistencias_trimestre: asistenciasMiembro,
       porcentaje_asistencia: Math.round(porcentaje),
-      ultima_asistencia: ultimaRes.rows[0].ultima_fecha
+      ultima_asistencia: ultimaRes.rows[0].ultima_fecha,
+      dias_sobriedad: perfil.dias_sobriedad ? Math.floor(perfil.dias_sobriedad) : 0,
+      paso_actual: perfil.paso_actual || 1,
+      fecha_recaida_o_inicio: perfil.fecha_sobriedad, // Esta fecha es el inicio de la sobriedad o la última recaída
+      nombre_padrino: padrino.nombre_padrino || 'No asignado',
+      total_ahijados: parseInt(ahijados.total_ahijados, 10) || 0
     });
 
   } catch (error) {
