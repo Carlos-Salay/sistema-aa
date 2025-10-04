@@ -14,7 +14,7 @@ function Calendario() {
   useEffect(() => {
     const fetchSesiones = async () => {
       try {
-        const response = await fetch('${API_URL}/api/sesiones');
+        const response = await fetch(`${API_URL}/api/sesiones`);
         if (!response.ok) throw new Error('No se pudieron cargar las sesiones.');
         const data = await response.json();
         const formattedSesiones = data.map(s => ({...s, fecha_hora: new Date(s.fecha_hora)}));

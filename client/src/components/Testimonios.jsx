@@ -38,7 +38,7 @@ function Testimonios() {
     e.preventDefault();
     if (!newTestimonio.titulo.trim() || !newTestimonio.contenido.trim()) return;
     try {
-      await fetch('${API_URL}/api/testimonios', {
+      await fetch(`${API_URL}/api/testimonios`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...newTestimonio, id_miembro: user.id_miembro }),

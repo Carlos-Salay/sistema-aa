@@ -23,7 +23,7 @@ function AsistenciaChart() {
   useEffect(() => {
     const fetchChartData = async () => {
       try {
-        const response = await fetch('${API_URL}/api/stats/asistencia-mensual');
+        const response = await fetch(`${API_URL}/api/stats/asistencia-mensual`);
         const data = await response.json();
         
         setChartData({

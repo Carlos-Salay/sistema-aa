@@ -63,7 +63,7 @@ function Asistencia() {
     setError('');
     setMensaje('Guardando...');
     try {
-      const response = await fetch('${API_URL}/api/asistencia/', {
+      const response = await fetch(`${API_URL}/api/asistencia/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

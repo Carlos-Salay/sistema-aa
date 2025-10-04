@@ -59,7 +59,7 @@ function ChatView() {
     if (!nuevoMensaje.trim() || !user || !conversacionCon?.id_miembro) return;
 
     try {
-      const response = await fetch('${API_URL}/api/mensajes', {
+      const response = await fetch(`${API_URL}/api/mensajes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

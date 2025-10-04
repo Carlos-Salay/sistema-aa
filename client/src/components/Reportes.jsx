@@ -21,7 +21,7 @@ function Reportes() {
   useEffect(() => {
     const fetchMiembros = async () => {
       try {
-        const response = await fetch('${API_URL}/api/miembros');
+        const response = await fetch(`${API_URL}/api/miembros`);
         const data = await response.json();
         setMiembros(data);
       } catch (err) {
@@ -43,8 +43,8 @@ function Reportes() {
       try {
         // Pedimos tanto el historial como la evaluación en paralelo
         const [historialRes, evaluacionRes] = await Promise.all([
-          fetch(`http://localhost:4000/api/reportes/asistencia/${idMiembro}`),
-          fetch(`http://localhost:4000/api/reportes/evaluacion/${idMiembro}`)
+          fetch(`${API_URL}/api/reportes/asistencia/${idMiembro}`),
+          fetch(`${API_URL}/api/reportes/evaluacion/${idMiembro}`)
         ]);
         
         const historialData = await historialRes.json();
