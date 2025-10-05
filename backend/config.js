@@ -13,5 +13,6 @@ module.exports = {
   DB_PASSWORD: process.env.DB_PASSWORD || 'root',
 
   JWT_SECRET: process.env.JWT_SECRET || 'local-secret-key-for-jwt',
-  ENCRYPTION_KEY: process.env.ENCRYPTION_KEY || 'local-encryption-key-1234567890'
+  // Reemplaza la clave incorrecta por esta:
+  ENCRYPTION_KEY: process.env.ENCRYPTION_KEY || '1234567890abcdef1234567890abcdef'
 };

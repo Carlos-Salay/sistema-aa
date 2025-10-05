@@ -10,6 +10,13 @@ const ENCRYPTION_KEY = config.ENCRYPTION_KEY;
 const IV_LENGTH = 16; 
 
 function encrypt(text) {
+  // === INICIO DEL CÓDIGO DE DIAGNÓSTICO ===
+  // Estas líneas nos mostrarán en la terminal qué clave se está usando realmente.
+  console.log('--- INICIANDO CIFRADO ---');
+  console.log('CLAVE DE CIFRADO RECIBIDA:', ENCRYPTION_KEY);
+  console.log('LONGITUD DE LA CLAVE:', ENCRYPTION_KEY.length);
+  // === FIN DEL CÓDIGO DE DIAGNÓSTICO ===
+
   const iv = crypto.randomBytes(IV_LENGTH);
   const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
   let encrypted = cipher.update(text);
@@ -87,6 +94,9 @@ router.post('/', async (req, res) => {
       'INSERT INTO mensajes (id_remitente, id_destinatario, mensaje_cifrado) VALUES ($1, $2, $3) RETURNING *',
       [id_remitente, id_destinatario, mensaje_cifrado]
     );
+
+    // (La lógica de notificación no se incluye aquí para enfocarnos en el error)
+
     res.status(201).json({
       ...result.rows[0],
       mensaje: decrypt(result.rows[0].mensaje_cifrado)

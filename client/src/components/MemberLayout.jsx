@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useTheme } from '../context/ThemeContext.jsx';
 import { FaSignOutAlt, FaSun, FaMoon } from 'react-icons/fa';
 import logo from '../logos/logo-aa.png';
+import Notificaciones from './Notificaciones.jsx'; // 1. Importar el componente
 
 function MemberLayout({ children }) {
   const { user, logout } = useAuth();
@@ -48,6 +49,11 @@ function MemberLayout({ children }) {
             <button onClick={toggleTheme} className="theme-toggle-button" title="Cambiar tema">
               {theme === 'light' ? <FaMoon /> : <FaSun />}
             </button>
+
+            {/* === INICIO DE LA CORRECCIÓN === */}
+            <Notificaciones /> {/* 2. Añadir el componente aquí */}
+            {/* === FIN DE LA CORRECCIÓN === */}
+
             <div className="user-info">
               <span className="user-name">{user.alias}</span>
               <span className="user-role">{user.rol}</span>

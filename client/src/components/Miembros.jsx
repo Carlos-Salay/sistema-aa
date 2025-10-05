@@ -20,24 +20,22 @@ const nombrePasos = {
 };
 
 function Miembros() {
-  const { user, token } = useAuth(); // 1. Obtenemos el token del contexto
+  const { user, token } = useAuth();
   const [miembros, setMiembros] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [viendoInactivos, setViendoInactivos] = useState(false);
   
   const [modalPadrino, setModalPadrino] = useState({ isOpen: false, miembro: null, padrinoId: '' });
-  const [modalCrear, setModalCrear] = useState({ isOpen: false, alias: '', fecha_ingreso: '', fecha_sobriedad: '', password: '', confirmPassword: '' });
+  const [modalCrear, setModalCrear] = useState({ isOpen: false, alias: '', fecha_ingreso: new Date().toISOString().split('T')[0], fecha_sobriedad: new Date().toISOString().split('T')[0], password: '', confirmPassword: '' });
   const [modalPassword, setModalPassword] = useState({ isOpen: false, miembro: null, newPassword: '', confirmPassword: '' });
   const [modalBaja, setModalBaja] = useState({ isOpen: false, miembro: null, activar: false });
   const [modalRecaida, setModalRecaida] = useState({ isOpen: false, miembro: null });
 
-  // Nuevos estados para la validación y confirmación de la contraseña
   const [passwordValidation, setPasswordValidation] = useState(passwordRequirements.map(req => ({ ...req, valid: false })));
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   const [confirmationModal, setConfirmationModal] = useState({ isOpen: false, title: '', message: '' });
 
-  // useEffect para validar la nueva contraseña en tiempo real
   useEffect(() => {
     if (modalPassword.isOpen || modalCrear.isOpen) {
       setPasswordValidation(
@@ -46,7 +44,6 @@ function Miembros() {
     }
   }, [modalPassword.newPassword, modalPassword.isOpen, modalCrear.password, modalCrear.isOpen]);
 
-  // --- LÓGICA FUNCIONAL ---
   const fetchMiembros = async () => {
     const estado = viendoInactivos ? 'inactivos' : 'activos';
     try {
@@ -86,7 +83,7 @@ function Miembros() {
     try {
       const res = await fetch(`${API_URL}/api/miembros`, {
         method: 'POST',
-        headers: { // 2. Añadimos el token a las cabeceras
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
@@ -100,7 +97,7 @@ function Miembros() {
 
       setModalCrear({ isOpen: false, alias: '', fecha_ingreso: '', fecha_sobriedad: '', password: '', confirmPassword: '' });
       setConfirmationModal({ isOpen: true, title: 'Éxito', message: 'Nuevo miembro registrado correctamente.' });
-      fetchMiembros(); // Recargamos la lista
+      fetchMiembros();
     } catch (err) {
       setConfirmationModal({ isOpen: true, title: 'Error', message: err.message });
     }
@@ -180,7 +177,7 @@ function Miembros() {
             <button onClick={() => setViendoInactivos(false)} className={!viendoInactivos ? 'active' : ''}><span>Activos</span></button>
             <button onClick={() => setViendoInactivos(true)} className={viendoInactivos ? 'active' : ''}><span>Inactivos</span></button>
           </div>
-          <button onClick={() => setModalCrear({ isOpen: true, alias: '', fecha_ingreso: '', fecha_sobriedad: '', password: '', confirmPassword: '' })} className="add-button">
+          <button onClick={() => setModalCrear({ isOpen: true, alias: '', fecha_ingreso: new Date().toISOString().split('T')[0], fecha_sobriedad: new Date().toISOString().split('T')[0], password: '', confirmPassword: '' })} className="add-button">
             <FaPlus /> <span>Agregar Miembro</span>
           </button>
         </div>
@@ -239,14 +236,25 @@ function Miembros() {
             <FaUser className="input-icon" />
             <input type="text" placeholder="Alias del miembro" value={modalCrear.alias} onChange={e => setModalCrear(m => ({...m, alias: e.target.value}))} required />
           </div>
-          <div className="input-group">
-            <FaCalendarAlt className="input-icon" />
-            <input type="date" title="Fecha de Ingreso" value={modalCrear.fecha_ingreso} onChange={e => setModalCrear(m => ({...m, fecha_ingreso: e.target.value}))} required />
+
+          {/* === CÓDIGO CORREGIDO AQUÍ === */}
+          <div className="form-group">
+            <label htmlFor="fecha_ingreso">Fecha de Ingreso</label>
+            <div className="input-group">
+              <FaCalendarAlt className="input-icon" />
+              <input type="date" id="fecha_ingreso" value={modalCrear.fecha_ingreso} onChange={e => setModalCrear(m => ({...m, fecha_ingreso: e.target.value}))} required />
+            </div>
           </div>
-          <div className="input-group">
-            <FaCalendarAlt className="input-icon" />
-            <input type="date" title="Fecha de Sobriedad" value={modalCrear.fecha_sobriedad} onChange={e => setModalCrear(m => ({...m, fecha_sobriedad: e.target.value}))} required />
+
+          <div className="form-group">
+            <label htmlFor="fecha_sobriedad">Fecha de Sobriedad</label>
+            <div className="input-group">
+              <FaCalendarAlt className="input-icon" />
+              <input type="date" id="fecha_sobriedad" value={modalCrear.fecha_sobriedad} onChange={e => setModalCrear(m => ({...m, fecha_sobriedad: e.target.value}))} required />
+            </div>
           </div>
+          {/* === FIN DE LA CORRECCIÓN === */}
+
           <div className="input-group">
             <FaLock className="input-icon" />
             <input type="password" placeholder="Contraseña" value={modalCrear.password} onChange={e => setModalCrear(m => ({...m, password: e.target.value}))} onFocus={() => setIsPasswordFocused(true)} required />
@@ -271,7 +279,6 @@ function Miembros() {
           </div>
         </form>
       </Modal>
-
 
       <Modal 
         isOpen={modalPassword.isOpen} 

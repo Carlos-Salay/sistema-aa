@@ -17,6 +17,7 @@ const mensajesRoutes = require('./routes/mensajes.routes.js');
 const reportesRoutes = require('./routes/reportes.routes.js');
 const ubicacionesRoutes = require('./routes/ubicaciones.routes.js');
 const testimoniosRoutes = require('./routes/testimonios.routes.js');
+const notificacionesRoutes = require('./routes/notificaciones.routes.js'); // <-- AÑADIR ESTA LÍNEA
 
 // 3. Inicialización de la Aplicación Express
 const app = express();
@@ -26,6 +27,7 @@ app.use(cors());
 app.use(express.json());
 
 // 5. Registro de las Rutas de la API
+app.use('/api/notificaciones', notificacionesRoutes);
 app.use('/api/miembros', miembroRoutes);
 app.use('/api/sesiones', sesionesRoutes);
 app.use('/api/asistencia', asistenciaRoutes);

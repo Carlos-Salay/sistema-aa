@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useTheme } from '../context/ThemeContext.jsx';
 import { FaUserShield, FaSignOutAlt, FaSun, FaMoon } from 'react-icons/fa';
 import logo from '../logos/logo-aa.png';
+import Notificaciones from './Notificaciones.jsx'; // 1. La importación ya está aquí, ¡perfecto!
 
 function Layout({ children }) {
   const { user, logout } = useAuth();
@@ -18,26 +19,21 @@ function Layout({ children }) {
     clearTimeout(idleTimeout.current);
     idleTimeout.current = setTimeout(() => {
       logout();
-      navigate('/login'); // Opcional: redirigir al login
+      navigate('/login');
       alert('Tu sesión se ha cerrado por inactividad.');
     }, IDLE_TIME_MS);
   };
 
   useEffect(() => {
     const events = ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart'];
-    
-    // Iniciar el temporizador cuando el componente se monta
     resetIdleTimer();
-    
-    // Añadir listeners para reiniciar el temporizador con la actividad del usuario
     events.forEach(event => window.addEventListener(event, resetIdleTimer));
 
-    // Limpiar listeners y el temporizador cuando el componente se desmonte
     return () => {
       clearTimeout(idleTimeout.current);
       events.forEach(event => window.removeEventListener(event, resetIdleTimer));
     };
-  }, [logout, navigate]); // Dependencias del efecto
+  }, [logout, navigate]);
   
   return (
     <div className="app-layout">
@@ -52,6 +48,11 @@ function Layout({ children }) {
             <button onClick={toggleTheme} className="theme-toggle-button" title="Cambiar tema">
               {theme === 'light' ? <FaMoon /> : <FaSun />}
             </button>
+
+            {/* === INICIO DE LA CORRECCIÓN === */}
+            <Notificaciones /> {/* 2. Añadimos el componente aquí */}
+            {/* === FIN DE LA CORRECCIÓN === */}
+            
             <div className="user-info">
               <span className="user-name">{user.alias}</span>
               <span className="user-role">{user.rol}</span>
@@ -70,7 +71,6 @@ function Layout({ children }) {
         <div className="bottom-bar">
           <nav className="nav-links">
             <NavLink to="/">Dashboard</NavLink>
-            <NavLink to="/registro">Registro</NavLink>
             <NavLink to="/miembros">Miembros</NavLink>
             <NavLink to="/sesiones">Sesiones</NavLink>
             <NavLink to="/calendario">Calendario</NavLink>

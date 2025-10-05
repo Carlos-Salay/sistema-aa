@@ -143,15 +143,46 @@ router.put('/:id/paso', async (req, res) => {
 router.put('/:id/padrino', async (req, res) => {
   const { id: ahijadoId } = req.params;
   const { idPadrino } = req.body;
+  const client = await pool.connect(); // Usamos un cliente para manejar la transacción
+
   try {
-    await pool.query("UPDATE apoyo SET fecha_fin = CURRENT_DATE WHERE id_ahijado = $1 AND fecha_fin IS NULL", [ahijadoId]);
+    await client.query('BEGIN');
+
+    // Finaliza cualquier apadrinamiento anterior del ahijado
+    await client.query("UPDATE apoyo SET fecha_fin = CURRENT_DATE WHERE id_ahijado = $1 AND fecha_fin IS NULL", [ahijadoId]);
+
     if (idPadrino && idPadrino !== '') {
-        await pool.query("INSERT INTO apoyo (id_padrino, id_ahijado, fecha_inicio, id_estado) VALUES ($1, $2, CURRENT_DATE, 1)", [idPadrino, ahijadoId]);
+        // Crea la nueva relación de apoyo
+        await client.query("INSERT INTO apoyo (id_padrino, id_ahijado, fecha_inicio, id_estado) VALUES ($1, $2, CURRENT_DATE, 1)", [idPadrino, ahijadoId]);
+
+        // --- LÓGICA DE NOTIFICACIONES ---
+        // 1. Obtener los alias de ambos
+        const ahijadoInfo = await client.query('SELECT alias FROM miembros WHERE id_miembro = $1', [ahijadoId]);
+        const padrinoInfo = await client.query('SELECT alias FROM miembros WHERE id_miembro = $1', [idPadrino]);
+        const aliasAhijado = ahijadoInfo.rows[0].alias;
+        const aliasPadrino = padrinoInfo.rows[0].alias;
+
+        // 2. Crear notificación para el ahijado
+        await client.query(
+            'INSERT INTO notificaciones (id_miembro_destino, mensaje, enlace) VALUES ($1, $2, $3)',
+            [ahijadoId, `Has sido asignado como ahijado de ${aliasPadrino}.`, `/mis-mensajes/${idPadrino}`]
+        );
+
+        // 3. Crear notificación para el padrino
+        await client.query(
+            'INSERT INTO notificaciones (id_miembro_destino, mensaje, enlace) VALUES ($1, $2, $3)',
+            [idPadrino, `Se te ha asignado un nuevo ahijado: ${aliasAhijado}.`, `/mis-mensajes/${ahijadoId}`]
+        );
     }
+
+    await client.query('COMMIT');
     res.json({ message: 'Padrino actualizado con éxito.' });
   } catch (error) {
+    await client.query('ROLLBACK');
     console.error('Error al asignar padrino:', error);
     res.status(500).json({ message: 'Error interno del servidor.' });
+  } finally {
+    client.release();
   }
 });
 
