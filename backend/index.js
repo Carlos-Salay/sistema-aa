@@ -17,7 +17,8 @@ const mensajesRoutes = require('./routes/mensajes.routes.js');
 const reportesRoutes = require('./routes/reportes.routes.js');
 const ubicacionesRoutes = require('./routes/ubicaciones.routes.js');
 const testimoniosRoutes = require('./routes/testimonios.routes.js');
-const notificacionesRoutes = require('./routes/notificaciones.routes.js'); // <-- AÑADIR ESTA LÍNEA
+const notificacionesRoutes = require('./routes/notificaciones.routes.js'); 
+const reportesGlobalesRoutes = require('./routes/reportesGlobales.routes.js');
 
 // 3. Inicialización de la Aplicación Express
 const app = express();
@@ -38,6 +39,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/roles', rolesRoutes);
 app.use('/api/mensajes', mensajesRoutes);
 app.use('/api/reportes', reportesRoutes);
+app.use('/api/reportes-globales', reportesGlobalesRoutes);
 app.use('/api/ubicaciones', ubicacionesRoutes);
 app.use('/api/testimonios', testimoniosRoutes);
 

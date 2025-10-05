@@ -512,6 +512,17 @@ button:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0, 123, 
 }
 
 
+.modal-content {
+  background-color: var(--bg-surface);
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 5px 20px var(--shadow-color);
+  width: 100%;
+  max-width: 700px; /* <-- VALOR ACTUALIZADO */
+  text-align: center;
+}
+
 
 
 /* === ESTILOS PARA PÁGINAS CON FORMULARIOS EN TARJETA === */
@@ -1104,4 +1115,32 @@ button:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0, 123, 
   text-decoration: underline;
   background: none;
   transform: none;
+}
+
+
+
+/* === CAMPO DE BUSQUEDA  === */
+
+.report-controls {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.search-input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--bg-main);
+    padding: 0 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+.search-input-group input {
+    border: none;
+    background: none;
+    padding: 12px 0;
+    outline: none;
+    color: var(--text-primary);
+    font-size: 1rem;
 }
