@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import { useTheme } from '../context/ThemeContext.jsx'; // Importar hook de tema
-import { FaUser, FaLock, FaEye, FaEyeSlash, FaSun, FaMoon } from 'react-icons/fa'; // Importar nuevos iconos
+import { useTheme } from '../context/ThemeContext.jsx';
+import { FaUser, FaLock, FaEye, FaEyeSlash, FaSun, FaMoon } from 'react-icons/fa';
 import loginImage from '../logos/login.png';
 import { API_URL } from '../config.js';
 
 function Login() {
   const [credencial, setCredencial] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // Estado para visibilidad de contraseña
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
-  const { theme, toggleTheme } = useTheme(); // Hook para cambiar tema
+  const { theme, toggleTheme } = useTheme();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,7 +22,9 @@ function Login() {
       const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ correo_electronico: credencial, password: password }),
+        // ===== CORRECCIÓN AQUÍ =====
+        // Se envía 'credencial' en lugar de 'correo_electronico'
+        body: JSON.stringify({ credencial: credencial, password: password }),
       });
       const data = await response.json();
       if (!response.ok) {
@@ -39,7 +41,6 @@ function Login() {
     <div className="login-page-container">
       <div className="login-card-split">
         
-        {/* === Columna Izquierda: Formulario === */}
         <div className="login-form-section">
           <button onClick={toggleTheme} className="theme-toggle-button-login" title="Cambiar tema">
             {theme === 'light' ? <FaMoon /> : <FaSun />}
@@ -53,7 +54,7 @@ function Login() {
               <FaUser className="input-icon" />
               <input
                 type="text"
-                placeholder="Usuario / Código Confidencial"
+                placeholder="Código de Usuario / Miembro"
                 autoComplete="username"
                 value={credencial}
                 onChange={(e) => setCredencial(e.target.value)}
@@ -64,14 +65,13 @@ function Login() {
             <div className="input-group">
               <FaLock className="input-icon" />
               <input
-                type={showPassword ? 'text' : 'password'} // Tipo de input dinámico
+                type={showPassword ? 'text' : 'password'}
                 placeholder="Contraseña"
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              {/* Botón para mostrar/ocultar contraseña */}
               <div
                 className="password-toggle-icon"
                 onClick={() => setShowPassword(!showPassword)}
@@ -87,10 +87,9 @@ function Login() {
           {error && <p className="message-error" style={{marginTop: '15px'}}>{error}</p>}
         </div>
 
-        {/* === Columna Derecha: Imagen Decorativa === */}
         <div className="login-image-section-blue">
             <div className="image-wrapper">
-                <img src={loginImage} alt="Persona organizando" className="login-decorative-image"/>
+                <img src={loginImage} alt="Logo de AA San José Pinula" className="login-decorative-image"/>
             </div>
         </div>
 

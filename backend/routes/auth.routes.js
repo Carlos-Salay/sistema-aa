@@ -1,19 +1,17 @@
-// backend/routes/auth.routes.js
 const { Router } = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { pool } = require('../db');
-const crypto = require('crypto');
 const config = require('../config');
-
 
 const router = Router();
 
 router.post('/login', async (req, res) => {
-  const { correo_electronico, password } = req.body; // El campo se sigue llamando correo_electronico, pero puede contener un código
+  // El campo 'credencial' puede ser un código de miembro o de usuario
+  const { credencial, password } = req.body;
 
-  if (!correo_electronico || !password) {
-    return res.status(400).json({ message: 'Usuario y contraseña son requeridos.' });
+  if (!credencial || !password) {
+    return res.status(400).json({ message: 'El código y la contraseña son requeridos.' });
   }
 
   try {
@@ -21,14 +19,16 @@ router.post('/login', async (req, res) => {
     let userRole = '';
     let userName = '';
     let userId = null;
-    let idOtroChat = null; // ID del padrino o ahijado
 
-    // 1. Verificamos si el input es un correo electrónico
-    if (correo_electronico.includes('@')) {
-      // Es un Administrador o Coordinador
+    // Determinar si es un intento de login de Miembro (AA) o Usuario (UAA)
+    const isUserLogin = credencial.startsWith('UAA');
+    const isMemberLogin = credencial.startsWith('AA');
+
+    if (isUserLogin) {
+      // Login para Administrador o Coordinador por 'codigo_usuario'
       const userResult = await pool.query(
-        'SELECT u.*, r.nombre as nombre_rol FROM usuarios u JOIN roles r ON u.id_rol = r.id_rol WHERE u.correo_electronico = $1 AND u.id_estado = 1',
-        [correo_electronico]
+        'SELECT u.*, r.nombre as nombre_rol FROM usuarios u JOIN roles r ON u.id_rol = r.id_rol WHERE u.codigo_usuario = $1 AND u.id_estado = 1',
+        [credencial]
       );
 
       if (userResult.rows.length > 0) {
@@ -37,20 +37,15 @@ router.post('/login', async (req, res) => {
         if (isPasswordCorrect) {
           user = potentialUser;
           userId = user.id_usuario;
-          userName = user.nombre_completo;
+          userName = user.alias;
           userRole = user.nombre_rol;
         }
       }
-    } else {
-      // Es un Miembro Anónimo (buscamos por código confidencial)
+    } else if (isMemberLogin) {
+      // Login para Miembro por 'codigo_confidencial'
       const memberResult = await pool.query(
-        `SELECT m.id_miembro, m.alias, m.codigo_confidencial, m.password_hash, a.id_padrino, ahijado.id_miembro as id_ahijado
-         FROM miembros m 
-         LEFT JOIN apoyo a ON m.id_miembro = a.id_ahijado AND a.fecha_fin IS NULL
-         LEFT JOIN apoyo ahijado_rel ON m.id_miembro = ahijado_rel.id_padrino AND ahijado_rel.fecha_fin IS NULL
-         LEFT JOIN miembros ahijado ON ahijado_rel.id_ahijado = ahijado.id_miembro
-         WHERE m.codigo_confidencial = $1 AND m.id_estado = 1`,
-        [correo_electronico]
+        'SELECT m.id_miembro, m.alias, m.codigo_confidencial, m.password_hash FROM miembros m WHERE m.codigo_confidencial = $1 AND m.id_estado = 1',
+        [credencial]
       );
 
       if (memberResult.rows.length > 0) {
@@ -61,39 +56,30 @@ router.post('/login', async (req, res) => {
             user = potentialMember;
             userId = user.id_miembro;
             userName = user.alias;
-            userRole = 'Miembro'; // Asignamos el rol 'Miembro'
-            // Determinamos con quién debe chatear
-            idOtroChat = user.id_padrino || user.id_ahijado;
+            userRole = 'Miembro';
           }
         }
       }
     }
 
-    // 2. Si no se encontró usuario o la contraseña fue incorrecta
+    // Si no se encontró usuario o la contraseña fue incorrecta
     if (!user) {
       return res.status(401).json({ message: 'Credenciales inválidas.' });
     }
 
-    // 3. Si el login es exitoso, creamos el Token
-    const payload = {
-      id: userId,
-      rol: userRole,
-    };
-    
-      const token = jwt.sign(payload, config.JWT_SECRET, {
-      expiresIn: '8h',
-    });
+    // Crear el Token
+    const payload = { id: userId, rol: userRole };
+    const token = jwt.sign(payload, config.JWT_SECRET, { expiresIn: '8h' });
 
-    // 4. Enviamos una respuesta estandarizada
+    // Enviar respuesta estandarizada
     res.json({
       message: '¡Login exitoso!',
       token: token,
       user: {
         id: userId,
-        alias: userName, // Cambiamos 'nombre' por 'alias' para estandarizar
+        alias: userName,
         rol: userRole,
-        id_miembro: userId, // Para miembros, es su propio ID. Para admins, no se usará en el frontend por ahora.
-        idOtroChat: idOtroChat, // <-- AÑADIDO: ID del padrino o ahijado
+        id_miembro: userRole === 'Miembro' ? userId : null,
       },
     });
 

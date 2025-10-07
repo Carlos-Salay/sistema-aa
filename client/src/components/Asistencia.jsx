@@ -20,7 +20,7 @@ function Asistencia() {
         const [miembrosRes, asistenciaRes, sessionRes] = await Promise.all([
           fetch(`${API_URL}/api/miembros`),
           fetch(`${API_URL}/api/asistencia/${id}`),
-          fetch(`${API_URL}/api//sesiones/${id}`)
+          fetch(`${API_URL}/api/sesiones/${id}`)
         ]);
 
         if (!miembrosRes.ok || !asistenciaRes.ok || !sessionRes.ok) {
