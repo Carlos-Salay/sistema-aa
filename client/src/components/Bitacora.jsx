@@ -54,7 +54,7 @@ function Bitacora() {
     if (!nuevaEntrada.trim()) return;
 
     try {
-      const response = await fetch('${API_URL}/api/bitacora', {
+      const response = await fetch(`${API_URL}/api/bitacora`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

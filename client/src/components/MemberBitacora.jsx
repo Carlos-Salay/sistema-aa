@@ -32,7 +32,7 @@ function MemberBitacora() {
     e.preventDefault();
     if (!nuevaEntrada.trim()) return;
     try {
-      const response = await fetch('${API_URL}/api/bitacora', {
+      const response = await fetch(`${API_URL}/api/bitacora`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id_miembro: user.id, reflexion: nuevaEntrada }),

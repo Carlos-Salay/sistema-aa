@@ -35,7 +35,7 @@ function Usuarios() {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const response = await fetch('${API_URL}/api/roles');
+        const response = await fetch(`${API_URL}/api/roles`);
         const data = await response.json();
         setRoles(data);
         if (data.length > 0) {
@@ -73,7 +73,7 @@ function Usuarios() {
     }
 
     try {
-      const response = await fetch('${API_URL}/api/usuarios', {
+      const response = await fetch(`${API_URL}/api/usuarios`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

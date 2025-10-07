@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaUserPlus, FaCheckCircle, FaTimesCircle, FaUser, FaLock, FaCalendarAlt } from 'react-icons/fa';
 import Modal from './Modal.jsx';
 import loginImage from '../logos/registro.png';
+import { API_URL } from '../config.js';
 
 // Requisitos de la contraseña
 const passwordRequirements = [
@@ -44,7 +45,7 @@ function Registro() {
     }
 
     try {
-      const response = await fetch('http://localhost:4000/api/miembros', {
+      const response = await fetch('${API_URL}/api/miembros', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

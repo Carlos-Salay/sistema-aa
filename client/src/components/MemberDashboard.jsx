@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx'; // Asegúrate de que la extensión es .jsx
 import { FaUserCircle, FaAward, FaBook, FaUsers, FaUserFriends, FaCommentDots } from 'react-icons/fa';
+import { API_URL } from '../config.js';
 
 // Traemos las descripciones de los pasos para usarlas aquí
 const descripcionPasos = {
@@ -28,7 +29,7 @@ function MemberDashboard() {
     if (!user) return;
     const fetchPerfil = async () => {
       try {
-        const response = await fetch(`http://localhost:4000/api/miembros/${user.id}`);
+        const response = await fetch(`${API_URL}/api/miembros/${user.id}`);
         const data = await response.json();
         setPerfil(data);
       } catch (err) {
