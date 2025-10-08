@@ -4,7 +4,16 @@ const router = Router();
 
 // RUTA GET CORREGIDA Y COMPLETA
 router.get('/:id_miembro', async (req, res) => {
-  const { id_miembro } = req.params;
+  // ===== INICIO DE LA CORRECCIÓN =====
+  let { id_miembro } = req.params;
+
+  // Si el id_miembro que llega es el texto "null" (como en el caso de un admin),
+  // lo convertimos a un verdadero valor null para la base de datos.
+  if (id_miembro === 'null') {
+    id_miembro = null;
+  }
+  // ===== FIN DE LA CORRECCIÓN =====
+
   try {
     const query = `
       SELECT 
@@ -14,6 +23,7 @@ router.get('/:id_miembro', async (req, res) => {
         (SELECT COUNT(*) FROM testimonio_reacciones WHERE id_testimonio = t.id_testimonio AND tipo_reaccion = 'apoyo') AS apoyos,
         (SELECT COUNT(*) FROM testimonio_reacciones WHERE id_testimonio = t.id_testimonio AND tipo_reaccion = 'inspiracion') AS inspiraciones,
         (SELECT COUNT(*) FROM testimonio_reacciones WHERE id_testimonio = t.id_testimonio AND tipo_reaccion = 'gratitud') AS gratitudes,
+        -- Si id_miembro es null, esta subconsulta no devolverá nada, que es el comportamiento correcto.
         (SELECT tipo_reaccion FROM testimonio_reacciones WHERE id_testimonio = t.id_testimonio AND id_miembro = $1) AS reaccion_usuario
       FROM 
         testimonios t
@@ -30,7 +40,7 @@ router.get('/:id_miembro', async (req, res) => {
   }
 });
 
-// RUTA PARA PUBLICAR UN NUEVO TESTIMONIO
+// RUTA PARA PUBLICAR UN NUEVO TESTIMONIO (sin cambios)
 router.post('/', async (req, res) => {
   const { id_miembro, titulo, contenido } = req.body;
   if (!id_miembro || !titulo || !contenido) {
@@ -48,7 +58,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// RUTA PARA REACCIONAR
+// RUTA PARA REACCIONAR (sin cambios)
 router.post('/:id/reaccionar', async (req, res) => {
   const { id: id_testimonio } = req.params;
   const { id_miembro, tipo_reaccion } = req.body;
@@ -58,21 +68,15 @@ router.post('/:id/reaccionar', async (req, res) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-
-    // 1. Verificamos si el usuario ya reaccionó con el MISMO tipo de reacción
     const reaccionExistente = await client.query(
         'SELECT id_reaccion FROM testimonio_reacciones WHERE id_testimonio = $1 AND id_miembro = $2 AND tipo_reaccion = $3',
         [id_testimonio, id_miembro, tipo_reaccion]
     );
-
-    // 2. Borramos cualquier reacción previa del usuario en este post para manejar el cambio de reacción
     await client.query(
       'DELETE FROM testimonio_reacciones WHERE id_testimonio = $1 AND id_miembro = $2',
       [id_testimonio, id_miembro]
     );
-
-    // 3. Si la reacción no existía previamente, la insertamos. Si existía, no hacemos nada (efecto de "quitar" la reacción).
-    if (reaccionExistente.rows.length === 0) { // Solo insertamos si NO era la misma reacción
+    if (reaccionExistente.rows.length === 0) {
       await client.query(
         'INSERT INTO testimonio_reacciones (id_testimonio, id_miembro, tipo_reaccion) VALUES ($1, $2, $3)',
         [id_testimonio, id_miembro, tipo_reaccion]
@@ -89,7 +93,7 @@ router.post('/:id/reaccionar', async (req, res) => {
   }
 });
 
-// RUTA PARA ELIMINAR UN TESTIMONIO
+// RUTA PARA ELIMINAR UN TESTIMONIO (sin cambios)
 router.delete('/:id', async (req, res) => {
   const { id: id_testimonio } = req.params;
   const { id_miembro, rol } = req.body;
@@ -109,10 +113,7 @@ router.delete('/:id', async (req, res) => {
     if (autorTestimonio !== id_miembro && rol !== 'Administrador') {
       return res.status(403).json({ message: 'No tienes permiso para eliminar esta publicación.' });
     }
-
-    // Primero borramos las reacciones asociadas para evitar errores de restricción
     await pool.query('DELETE FROM testimonio_reacciones WHERE id_testimonio = $1', [id_testimonio]);
-    // Ahora borramos el testimonio
     await pool.query('DELETE FROM testimonios WHERE id_testimonio = $1', [id_testimonio]);
     res.status(200).json({ message: 'Testimonio eliminado con éxito.' });
   } catch (error) {

@@ -4,6 +4,20 @@ const cors = require('cors');
 const { testDbConnection } = require('./db');
 const config = require('./config'); // <-- AÑADIDO: Importar la configuración
 
+
+
+// ===== CÓDIGO TEMPORAL PARA GENERAR HASH =====
+const bcrypt = require('bcryptjs');
+const miPassword = 'admin123'; // La contraseña que quieres usar
+
+bcrypt.hash(miPassword, 10).then(hash => {
+  console.log('==============================================');
+  console.log('COPIA ESTE NUEVO HASH:');
+  console.log(hash);
+  console.log('==============================================');
+});
+// ===== FIN DE CÓDIGO TEMPORAL =====
+
 // 2. Importación de Todos los Archivos de Rutas
 const miembroRoutes = require('./routes/miembros.routes.js');
 const sesionesRoutes = require('./routes/sesiones.routes.js');
