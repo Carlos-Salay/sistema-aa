@@ -82,16 +82,48 @@ button:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0, 123, 
 .login-image-section-blue .image-wrapper { background: rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
 .login-decorative-image { max-width: 300px; border-radius: 15px; }
 
+/* --- INICIO: ESTILOS PARA MENÚ MÓVIL --- */
+.mobile-menu-button {
+  display: none; /* Oculto por defecto en escritorio */
+  background: none; border: none; font-size: 1.8rem; color: var(--text-primary);
+  cursor: pointer; z-index: 1002;
+}
+.mobile-nav-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 998;
+}
+.mobile-nav-links {
+  position: fixed; top: 0; right: 0; height: 100%; width: 280px;
+  background-color: var(--bg-surface); box-shadow: -5px 0 15px var(--shadow-color);
+  z-index: 999; transform: translateX(100%); transition: transform 0.3s ease-in-out;
+  padding-top: 100px;
+}
+.mobile-nav-links.open { transform: translateX(0); }
+.mobile-nav-links .nav-links {
+  flex-direction: column; align-items: center; gap: 20px;
+}
+.mobile-nav-links .nav-links a {
+  font-size: 1.2rem; width: 80%; text-align: center;
+}
+/* --- FIN: ESTILOS PARA MENÚ MÓVIL --- */
+
+
 /* === 6. Responsividad === */
-@media (max-width: 900px) { .bottom-bar { display: none; } }
-@media (max-width: 800px) { .login-image-section-blue { display: none; } .login-card-split { flex-direction: column; max-width: 450px; } }
+@media (max-width: 900px) { 
+  .bottom-bar { display: none; } 
+  .mobile-menu-button { display: block; } /* Mostramos el botón de hamburguesa */
+  .navbar-title { display: none; }
+}
+@media (max-width: 800px) { 
+  .login-image-section-blue { display: none; } 
+  .login-card-split { flex-direction: column; max-width: 450px; } 
+}
 @media (max-width: 600px) {
-  .top-bar { padding: 0 20px; height: 70px; }
+  .top-bar { padding: 0 20px; }
   .user-role, .user-name { display: none; }
   .navbar-logo { height: 45px; }
   .page-content-wrapper { padding: 0 20px; }
 }
-
 
 
 

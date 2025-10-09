@@ -1,20 +1,20 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useTheme } from '../context/ThemeContext.jsx';
-import { FaUserShield, FaSignOutAlt, FaSun, FaMoon } from 'react-icons/fa';
+import { FaUserShield, FaSignOutAlt, FaSun, FaMoon, FaBars, FaTimes } from 'react-icons/fa';
 import logo from '../logos/logo-aa.png';
-import Notificaciones from './Notificaciones.jsx'; // 1. La importación ya está aquí, ¡perfecto!
+import Notificaciones from './Notificaciones.jsx';
 
 function Layout({ children }) {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // Estado para el menú móvil
 
-  // --- LÓGICA PARA EL CIERRE DE SESIÓN POR INACTIVIDAD ---
+  // Lógica para cierre de sesión por inactividad
   const idleTimeout = useRef(null);
-  const IDLE_TIME_MS = 3 * 60 * 1000; // 3 minutos
-
+  const IDLE_TIME_MS = 3 * 60 * 1000;
   const resetIdleTimer = () => {
     clearTimeout(idleTimeout.current);
     idleTimeout.current = setTimeout(() => {
@@ -23,22 +23,19 @@ function Layout({ children }) {
       alert('Tu sesión se ha cerrado por inactividad.');
     }, IDLE_TIME_MS);
   };
-
   useEffect(() => {
     const events = ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart'];
     resetIdleTimer();
     events.forEach(event => window.addEventListener(event, resetIdleTimer));
-
     return () => {
       clearTimeout(idleTimeout.current);
       events.forEach(event => window.removeEventListener(event, resetIdleTimer));
     };
   }, [logout, navigate]);
-  
+
   return (
     <div className="app-layout">
       <header className="top-navbar">
-        {/* Fila Superior: Logo y Controles de Usuario */}
         <div className="top-bar">
           <div className="navbar-brand">
             <img src={logo} alt="ClaraVía Logo" className="navbar-logo" />
@@ -48,11 +45,7 @@ function Layout({ children }) {
             <button onClick={toggleTheme} className="theme-toggle-button" title="Cambiar tema">
               {theme === 'light' ? <FaMoon /> : <FaSun />}
             </button>
-
-            {/* === INICIO DE LA CORRECCIÓN === */}
-            <Notificaciones /> {/* 2. Añadimos el componente aquí */}
-            {/* === FIN DE LA CORRECCIÓN === */}
-            
+            <Notificaciones />
             <div className="user-info">
               <span className="user-name">{user.alias}</span>
               <span className="user-role">{user.rol}</span>
@@ -66,8 +59,13 @@ function Layout({ children }) {
               <FaSignOutAlt />
             </button>
           </div>
+          {/* Botón de menú hamburguesa para móviles */}
+          <button className="mobile-menu-button" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <FaTimes /> : <FaBars />}
+          </button>
         </div>
-        {/* Fila Inferior: Enlaces de Navegación */}
+        
+        {/* Barra de navegación para escritorio */}
         <div className="bottom-bar">
           <nav className="nav-links">
             <NavLink to="/">Dashboard</NavLink>
@@ -79,6 +77,20 @@ function Layout({ children }) {
           </nav>
         </div>
       </header>
+
+      {/* Menú de navegación lateral para móviles */}
+      <div className={`mobile-nav-overlay ${isMenuOpen ? 'open' : ''}`} onClick={() => setIsMenuOpen(false)}></div>
+      <div className={`mobile-nav-links ${isMenuOpen ? 'open' : ''}`}>
+        <nav className="nav-links" onClick={() => setIsMenuOpen(false)}>
+          <NavLink to="/">Dashboard</NavLink>
+          <NavLink to="/miembros">Miembros</NavLink>
+          <NavLink to="/sesiones">Sesiones</NavLink>
+          <NavLink to="/calendario">Calendario</NavLink>
+          <NavLink to="/testimonios">Testimonios</NavLink>
+          {user.rol === 'Administrador' && <NavLink to="/reportes">Reportes</NavLink>}
+        </nav>
+      </div>
+
       <main className="main-content">
         <div className="page-content-wrapper">
           {children}
