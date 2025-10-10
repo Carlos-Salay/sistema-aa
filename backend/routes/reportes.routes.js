@@ -22,7 +22,9 @@ router.get('/asistencia/:id_miembro', async (req, res) => {
   }
 });
 
-// --- RUTA PARA CALCULAR ESTADÍSTICAS DE PARTICIPACIÓN ---
+// backend/routes/reportes.routes.js
+
+// --- RUTA PARA CALCULAR ESTADÍSTICAS DE PARTICIPACIÓN (CORREGIDA) ---
 router.get('/evaluacion/:id_miembro', async (req, res) => {
   const { id_miembro } = req.params;
   try {
@@ -46,24 +48,45 @@ router.get('/evaluacion/:id_miembro', async (req, res) => {
        WHERE a.id_miembro = $1`,
        [id_miembro]
     );
+    
+    // 4. OBTENER DATOS ADICIONALES DEL MIEMBRO (¡NUEVO!)
+    const miembroInfoQuery = pool.query(
+      `SELECT 
+        EXTRACT(DAY FROM (NOW() - m.fecha_sobriedad)) AS dias_sobriedad,
+        p_ultimo.paso as paso_actual,
+        padrino.alias as nombre_padrino
+      FROM public.miembros m
+      LEFT JOIN public.apoyo a ON m.id_miembro = a.id_ahijado AND a.fecha_fin IS NULL
+      LEFT JOIN public.miembros padrino ON a.id_padrino = padrino.id_miembro
+      LEFT JOIN (
+        SELECT DISTINCT ON (id_miembro) id_miembro, paso
+        FROM public.progreso ORDER BY id_miembro, fecha DESC, id_progreso DESC
+      ) p_ultimo ON m.id_miembro = p_ultimo.id_miembro
+      WHERE m.id_miembro = $1`,
+      [id_miembro]
+    );
 
-    const [totalRes, asistenciasRes, ultimaRes] = await Promise.all([
+    const [totalRes, asistenciasRes, ultimaRes, miembroInfoRes] = await Promise.all([
       totalSesionesQuery,
       asistenciasMiembroQuery,
-      ultimaAsistenciaQuery
+      ultimaAsistenciaQuery,
+      miembroInfoQuery // Se añade la nueva consulta
     ]);
 
     const totalSesiones = parseInt(totalRes.rows[0].count, 10);
     const asistenciasMiembro = parseInt(asistenciasRes.rows[0].count, 10);
-    
-    // Calculamos el porcentaje, evitando división por cero
     const porcentaje = totalSesiones > 0 ? (asistenciasMiembro / totalSesiones) * 100 : 0;
+    const miembroInfo = miembroInfoRes.rows[0] || {};
 
+    // SE AÑADEN LOS NUEVOS DATOS A LA RESPUESTA
     res.json({
       total_sesiones_trimestre: totalSesiones,
       asistencias_trimestre: asistenciasMiembro,
       porcentaje_asistencia: Math.round(porcentaje),
-      ultima_asistencia: ultimaRes.rows[0].ultima_fecha
+      ultima_asistencia: ultimaRes.rows[0].ultima_fecha,
+      dias_sobriedad: miembroInfo.dias_sobriedad ? Math.floor(miembroInfo.dias_sobriedad) : 0,
+      paso_actual: miembroInfo.paso_actual || 1,
+      nombre_padrino: miembroInfo.nombre_padrino || 'No asignado'
     });
 
   } catch (error) {

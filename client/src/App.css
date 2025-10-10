@@ -88,10 +88,25 @@ button:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0, 123, 
   background: none; border: none; font-size: 1.8rem; color: var(--text-primary);
   cursor: pointer; z-index: 1002;
 }
+
 .mobile-nav-overlay {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
   z-index: 998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease-in-out;
 }
+
+.mobile-nav-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .mobile-nav-links {
   position: fixed; top: 0; right: 0; height: 100%; width: 280px;
   background-color: var(--bg-surface); box-shadow: -5px 0 15px var(--shadow-color);
@@ -1187,3 +1202,35 @@ button:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0, 123, 
     font-size: 1rem;
 }
 
+/* === AJUSTES PARA EL MODAL DE REPORTES INDIVIDUALES === */
+#report-cards.dashboard-grid {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 15px; /* Espacio reducido entre tarjetas */
+}
+
+#report-cards .card {
+  padding: 20px 15px; /* Padding reducido */
+}
+
+#report-cards .card-header {
+  font-size: 0.9rem; /* Texto de cabecera más pequeño */
+  margin-bottom: 8px;
+}
+
+#report-cards .card-body {
+  padding: 8px 0; /* Menos espacio vertical en el cuerpo */
+}
+
+#report-cards .card-value {
+  font-size: 2.8rem; /* Tamaño de la fuente principal reducido */
+}
+
+/* Ajuste específico para la tarjeta del gráfico */
+#report-cards .chart-card .card-body {
+  height: 120px; /* Reducir la altura del gráfico */
+}
+
+/* Ajuste para tarjetas con texto largo como el nombre del padrino */
+#report-cards .card-value-small {
+  font-size: 1.5rem;
+}

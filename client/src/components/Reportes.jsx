@@ -233,16 +233,13 @@ function Reportes() {
                 <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '20px'}}>
                     <button onClick={generatePdf} className="pdf-button"><FaFilePdf /><span>Generar Certificado</span></button>
                 </div>
-                <div id="report-cards" className="dashboard-grid" style={{
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                    gap: '20px'
-                }}>
+                <div id="report-cards" className="dashboard-grid">
                     <div className="card chart-card"><div className="card-header">Asistencia (90 días)</div><div className="card-body" style={{height: '150px'}}><Doughnut data={chartData} options={{ responsive: true, maintainAspectRatio: false }} /></div></div>
                     <div className="card"><div className="card-header"><FaPercentage /> Porcentaje</div><div className="card-body"><span className="card-value">{evaluacion.porcentaje_asistencia}%</span></div></div>
                     <div className="card"><div className="card-header"><FaCalendarCheck /> Asistencias</div><div className="card-body"><span className="card-value">{evaluacion.asistencias_trimestre}/{evaluacion.total_sesiones_trimestre}</span></div></div>
                     <div className="card"><div className="card-header"><FaAward /> Días de Sobriedad</div><div className="card-body"><span className="card-value">{evaluacion.dias_sobriedad}</span></div></div>
                     <div className="card"><div className="card-header"><FaBook /> Paso Actual</div><div className="card-body"><span className="card-value">{evaluacion.paso_actual}</span></div></div>
-                    <div className="card"><div className="card-header"><FaUserFriends /> Padrino</div><div className="card-body"><span className="card-value" style={{fontSize: '1.8rem'}}>{evaluacion.nombre_padrino}</span></div></div>
+                    <div className="card"><div className="card-header"><FaUserFriends /> Padrino</div><div className="card-body"><span className="card-value card-value-small">{evaluacion.nombre_padrino || 'No asignado'}</span></div></div>
                 </div>
             </div>
         )}
