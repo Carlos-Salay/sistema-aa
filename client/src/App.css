@@ -1202,3 +1202,49 @@ button:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0, 123, 
     font-size: 1rem;
 }
 
+/* === AJUSTES PARA EL MODAL DE REPORTES (VERSIÓN EXTRA COMPACTA) === */
+#report-cards.dashboard-grid {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Columnas aún más angostas */
+  gap: 8px; /* Espacio mínimo entre tarjetas */
+}
+
+#report-cards .card {
+  padding: 10px; /* Padding mínimo */
+}
+
+#report-cards .chart-card {
+  grid-column: 1 / -1;
+}
+
+#report-cards .card-header {
+  font-size: 0.75rem; /* Texto de cabecera muy pequeño */
+  font-weight: 500;
+  margin-bottom: 4px;
+  gap: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#report-cards .card-icon {
+  font-size: 0.9rem; /* Icono muy pequeño */
+}
+
+#report-cards .card-body {
+  padding: 4px 0;
+}
+
+#report-cards .card-value {
+  font-size: 2rem; /* Tamaño de la fuente principal reducido al máximo */
+}
+
+#report-cards .chart-card .card-body {
+  height: 110px; /* Altura del gráfico mínima */
+}
+
+#report-cards .card-value-small {
+  font-size: 1.1rem; /* Tamaño para texto largo reducido al máximo */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
