@@ -1248,3 +1248,32 @@ button:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0, 123, 
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+
+/* === AJUSTES DE RESPONSIVIDAD PARA EL CALENDARIO === */
+@media (max-width: 768px) {
+  .calendar-header .month-title {
+    font-size: 1.5rem; /* Título del mes más pequeño */
+  }
+
+  .calendar-day {
+    min-height: 80px; /* Días del calendario menos altos */
+    padding: 6px;
+  }
+
+  .calendar-grid {
+    gap: 4px; /* Menos espacio entre los días */
+  }
+
+  .calendar-day.today .day-number {
+    width: 24px;
+    height: 24px;
+    font-size: 0.8rem;
+  }
+
+  .session-event {
+    font-size: 0.7rem; /* Texto del evento más pequeño */
+    padding: 3px 5px;
+    border-radius: 4px;
+  }
+}
