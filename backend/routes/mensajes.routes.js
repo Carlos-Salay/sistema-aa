@@ -82,28 +82,61 @@ router.get('/:id_miembro1/:id_miembro2', async (req, res) => {
   }
 });
 
-// --- RUTA PARA ENVIAR UN MENSAJE ---
+// --- RUTA PARA ENVIAR UN MENSAJE (CON NOTIFICACIONES) ---
 router.post('/', async (req, res) => {
   const { id_remitente, id_destinatario, mensaje } = req.body;
   if (!id_remitente || !id_destinatario || !mensaje) {
     return res.status(400).json({ message: 'Todos los campos son requeridos.' });
   }
+
+  // Usamos un cliente para la transacción
+  const client = await pool.connect();
+
   try {
+    // Iniciamos la transacción
+    await client.query('BEGIN');
+
+    // 1. Cifrar e insertar el mensaje
     const mensaje_cifrado = encrypt(mensaje);
-    const result = await pool.query(
+    const result = await client.query(
       'INSERT INTO mensajes (id_remitente, id_destinatario, mensaje_cifrado) VALUES ($1, $2, $3) RETURNING *',
       [id_remitente, id_destinatario, mensaje_cifrado]
     );
+    const mensajeGuardado = result.rows[0];
 
-    // (La lógica de notificación no se incluye aquí para enfocarnos en el error)
+    // --- INICIO DE LA LÓGICA DE NOTIFICACIÓN ---
+    // 2. Obtener el alias del remitente
+    const remitenteInfo = await client.query('SELECT alias FROM miembros WHERE id_miembro = $1', [id_remitente]);
+    const aliasRemitente = remitenteInfo.rows[0].alias;
 
+    // 3. Crear el mensaje y el enlace de la notificación
+    const mensajeNotificacion = `Tienes un nuevo mensaje de ${aliasRemitente}.`;
+    const enlace = `/mis-mensajes/${id_remitente}`; // Enlace para ir directamente al chat
+
+    // 4. Insertar la notificación para el destinatario
+    await client.query(
+        'INSERT INTO notificaciones (id_miembro_destino, mensaje, enlace) VALUES ($1, $2, $3)',
+        [id_destinatario, mensajeNotificacion, enlace]
+    );
+    // --- FIN DE LA LÓGICA DE NOTIFICACIÓN ---
+
+    // 5. Si todo salió bien, confirmamos los cambios
+    await client.query('COMMIT');
+
+    // Devolvemos el mensaje descifrado al remitente para que lo vea en su chat
     res.status(201).json({
-      ...result.rows[0],
-      mensaje: decrypt(result.rows[0].mensaje_cifrado)
+      ...mensajeGuardado,
+      mensaje: decrypt(mensajeGuardado.mensaje_cifrado)
     });
+
   } catch (error) {
+    // Si algo falla, revertimos todos los cambios
+    await client.query('ROLLBACK');
     console.error('Error al enviar el mensaje:', error);
     res.status(500).json({ message: 'Error interno del servidor.' });
+  } finally {
+    // Liberamos el cliente
+    client.release();
   }
 });
 

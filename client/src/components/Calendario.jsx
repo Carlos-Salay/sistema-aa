@@ -1,16 +1,15 @@
-// client/src/components/Calendario.jsx
 import React, { useState, useEffect } from 'react';
 import { FaCalendarAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import Modal from './Modal.jsx'; // 1. Importamos nuestro componente Modal
+import Modal from './Modal.jsx';
 import { API_URL } from '../config.js';
 
 function Calendario() {
   const [sesiones, setSesiones] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedSession, setSelectedSession] = useState(null); // 2. Nuevo estado para la sesión seleccionada
+  const [selectedSession, setSelectedSession] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [error, setError] = useState('');
 
-  // Carga las sesiones (sin cambios)
   useEffect(() => {
     const fetchSesiones = async () => {
       try {
@@ -26,7 +25,10 @@ function Calendario() {
     fetchSesiones();
   }, []);
 
-  // --- Lógica para generar el calendario ---
+  const sessionsForSelectedDay = sesiones.filter(
+    s => s.fecha_hora.toDateString() === selectedDate.toDateString()
+  );
+
   const daysOfWeek = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
   const month = currentDate.getMonth();
   const year = currentDate.getFullYear();
@@ -42,31 +44,41 @@ function Calendario() {
   for (let day = 1; day <= daysInMonth; day++) {
     const dayDate = new Date(year, month, day);
     const isToday = new Date().toDateString() === dayDate.toDateString();
+    const isSelected = selectedDate.toDateString() === dayDate.toDateString();
     const daySessions = sesiones.filter(s => s.fecha_hora.toDateString() === dayDate.toDateString());
 
     calendarDays.push(
-      <div key={day} className={`calendar-day ${isToday ? 'today' : ''}`}>
+      <div 
+        key={day} 
+        className={`calendar-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}`}
+        onClick={() => setSelectedDate(dayDate)}
+      >
         <div className="day-number">{day}</div>
         <div className="sessions-container">
           {daySessions.map(sesion => (
-            // 3. Añadimos el evento onClick para abrir el modal con esta sesión
             <div 
               key={sesion.id_sesion} 
               className="session-event"
-              onClick={() => setSelectedSession(sesion)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedSession(sesion);
+              }}
             >
               {sesion.tema}
             </div>
           ))}
+          {daySessions.length > 0 && <div className="session-indicator"></div>} 
         </div>
       </div>
     );
   }
 
-  // --- Funciones de Navegación (sin cambios) ---
   const goToPreviousMonth = () => setCurrentDate(new Date(year, month - 1, 1));
   const goToNextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
-  const goToToday = () => setCurrentDate(new Date());
+  const goToToday = () => {
+    setCurrentDate(new Date());
+    setSelectedDate(new Date());
+  };
 
   return (
     <div>
@@ -83,16 +95,45 @@ function Calendario() {
           <button onClick={goToNextMonth} className="nav-button"><FaChevronRight /></button>
           <button onClick={goToToday} className="today-button">Hoy</button>
         </div>
-        <div className="calendar-weekdays">
-          {daysOfWeek.map(day => <div key={day}>{day}</div>)}
-        </div>
-        <div className="calendar-grid">
-          {calendarDays}
+
+        <div className="calendar-layout">
+          <div>
+            <div className="calendar-weekdays">
+              {daysOfWeek.map(day => <div key={day}>{day}</div>)}
+            </div>
+            <div className="calendar-grid">
+              {calendarDays}
+            </div>
+          </div>
+        
+          <div className="agenda-view">
+            <h3 className="agenda-title">
+              Sesiones del {selectedDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric' })}
+            </h3>
+            <div className="agenda-list">
+              {sessionsForSelectedDay.length > 0 ? (
+                sessionsForSelectedDay.map(sesion => (
+                  <div key={sesion.id_sesion} className="agenda-item" onClick={() => setSelectedSession(sesion)}>
+                    <div className="agenda-item-time">
+                      {sesion.fecha_hora.toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                    <div className="agenda-item-details">
+                      <div className="agenda-item-title">{sesion.tema}</div>
+                      <div className="agenda-item-location">{sesion.ubicacion || 'No especificada'}</div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="agenda-item-empty">
+                  No hay sesiones programadas para este día.
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
       {error && <p className="message-error">{error}</p>}
 
-      {/* 4. Añadimos el Modal al final. Será invisible hasta que se seleccione una sesión */}
       <Modal 
         isOpen={!!selectedSession} 
         onClose={() => setSelectedSession(null)} 

@@ -40,21 +40,64 @@ router.get('/:id_miembro', async (req, res) => {
   }
 });
 
-// RUTA PARA PUBLICAR UN NUEVO TESTIMONIO (sin cambios)
+// backend/routes/testimonios.routes.js
+
+// --- RUTA PARA PUBLICAR UN NUEVO TESTIMONIO (CON NOTIFICACIONES) ---
 router.post('/', async (req, res) => {
   const { id_miembro, titulo, contenido } = req.body;
   if (!id_miembro || !titulo || !contenido) {
     return res.status(400).json({ message: 'Todos los campos son requeridos.' });
   }
+
+  const client = await pool.connect();
+
   try {
-    const result = await pool.query(
+    await client.query('BEGIN');
+
+    // 1. Insertar el nuevo testimonio
+    const result = await client.query(
       'INSERT INTO testimonios (id_miembro, titulo, contenido) VALUES ($1, $2, $3) RETURNING *',
       [id_miembro, titulo, contenido]
     );
-    res.status(201).json(result.rows[0]);
+    const nuevoTestimonio = result.rows[0];
+
+    // --- INICIO DE LA LÓGICA DE NOTIFICACIÓN ---
+    // 2. Obtener el alias del autor
+    const autorInfo = await client.query('SELECT alias FROM miembros WHERE id_miembro = $1', [id_miembro]);
+    const aliasAutor = autorInfo.rows[0].alias;
+
+    // 3. Obtener todos los demás miembros activos
+    const otrosMiembros = await client.query(
+        'SELECT id_miembro FROM miembros WHERE id_estado = 1 AND id_miembro != $1',
+        [id_miembro]
+    );
+
+    if (otrosMiembros.rows.length > 0) {
+        // 4. Crear el mensaje y el enlace de la notificación
+        const mensaje = `Nuevo testimonio de ${aliasAutor}: "${titulo}"`;
+        const enlace = '/testimonios'; // El enlace llevará al muro de testimonios
+
+        // 5. Crear una notificación para cada uno de los otros miembros
+        for (const miembro of otrosMiembros.rows) {
+            await client.query(
+                'INSERT INTO notificaciones (id_miembro_destino, mensaje, enlace) VALUES ($1, $2, $3)',
+                [miembro.id_miembro, mensaje, enlace]
+            );
+        }
+    }
+    // --- FIN DE LA LÓGICA DE NOTIFICACIÓN ---
+
+    // 6. Si todo salió bien, confirmar los cambios
+    await client.query('COMMIT');
+
+    res.status(201).json(nuevoTestimonio);
+
   } catch (error) {
+    await client.query('ROLLBACK');
     console.error("Error al publicar testimonio:", error);
     res.status(500).json({ message: 'Error interno del servidor.' });
+  } finally {
+    client.release();
   }
 });
 
