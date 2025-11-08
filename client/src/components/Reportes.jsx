@@ -144,7 +144,7 @@ function Reportes() {
 
     doc.setFontSize(14);
     doc.setFont('helvetica', 'normal');
-    doc.text(`El grupo "ClaraVía" se enorgullece en reconocer a:`, pageWidth / 2, 90, { align: 'center' });
+    doc.text(`"El Grupo de Alcohólicos anónimos San José Pinula" se enorgullece en reconocer a:`, pageWidth / 2, 90, { align: 'center' });
     
     doc.setFontSize(32);
     doc.setFont('helvetica', 'bold');

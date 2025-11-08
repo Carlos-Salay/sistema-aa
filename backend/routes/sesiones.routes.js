@@ -4,7 +4,7 @@ const { pool } = require('../db');
 
 const router = Router();
 
-// RUTA PARA OBTENER TODAS LAS SESIONES (sin cambios)
+// RUTA PARA OBTENER TODAS LAS SESIONES
 router.get('/', async (req, res) => {
   try {
     const query = `
@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// RUTA PARA OBTENER UNA SESIÓN POR SU ID (sin cambios)
+// RUTA PARA OBTENER UNA SESIÓN POR SU ID
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -44,11 +44,9 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ message: 'El tema y la fecha son obligatorios.' });
   }
 
-  // Usamos un "cliente" para asegurar que todas las operaciones (guardar sesión y notificar) se completen juntas
   const client = await pool.connect();
 
   try {
-    // Iniciamos la transacción
     await client.query('BEGIN');
 
     // 1. Insertamos la nueva sesión
@@ -86,13 +84,30 @@ router.post('/', async (req, res) => {
     res.status(201).json(nuevaSesion);
 
   } catch (error) {
-    // Si algo falla, revertimos todos los cambios
     await client.query('ROLLBACK');
     console.error('Error al crear la sesión:', error);
     res.status(500).json({ message: 'Error interno del servidor.' });
   } finally {
-    // Liberamos el cliente para que pueda ser usado por otras peticiones
     client.release();
+  }
+});
+
+// RUTA PARA ELIMINAR UNA SESIÓN
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Gracias al 'ON DELETE CASCADE' en la BD,
+    // al eliminar la sesión, se borrarán las asistencias asociadas.
+    const result = await pool.query('DELETE FROM sesiones WHERE id_sesion = $1 RETURNING *', [id]);
+    
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'Sesión no encontrada.' });
+    }
+    
+    res.json({ message: 'Sesión eliminada con éxito.' });
+  } catch (error) {
+    console.error('Error al eliminar la sesión:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
   }
 });
 

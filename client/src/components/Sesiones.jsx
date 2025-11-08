@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { API_URL } from '../config.js';
-import { FaCalendarPlus, FaListAlt, FaBook, FaCalendarAlt, FaMapMarkerAlt, FaAlignLeft, FaChevronDown, FaPlus, FaMapMarkedAlt } from 'react-icons/fa';
+import { useAuth } from '../context/AuthContext.jsx'; // <-- AÑADIDO
+import { 
+    FaCalendarPlus, FaListAlt, FaBook, FaCalendarAlt, FaMapMarkerAlt, 
+    FaAlignLeft, FaChevronDown, FaPlus, FaMapMarkedAlt, FaTrash // <-- AÑADIDO FaTrash
+} from 'react-icons/fa';
 import Modal from './Modal.jsx';
 
 function Sesiones() {
+  const { user } = useAuth(); // <-- AÑADIDO: Para saber el rol del usuario
   const [sesiones, setSesiones] = useState([]);
   const [ubicaciones, setUbicaciones] = useState([]);
   const [formData, setFormData] = useState({
@@ -19,6 +24,9 @@ function Sesiones() {
   const [isUbicacionModalOpen, setIsUbicacionModalOpen] = useState(false);
   const [nuevaUbicacion, setNuevaUbicacion] = useState({ nombre: '', direccion: '' });
 
+  // --- AÑADIDO: Estado para el modal de eliminación ---
+  const [modalDelete, setModalDelete] = useState({ isOpen: false, sesion: null });
+
   const fetchData = async () => {
     try {
       const [sesionesRes, ubicacionesRes] = await Promise.all([
@@ -31,7 +39,7 @@ function Sesiones() {
       setSesiones(sesionesData);
       setUbicaciones(ubicacionesData);
       
-      if (ubicacionesData.length > 0) {
+      if (ubicacionesData.length > 0 && !formData.id_ubicacion) {
         setFormData(prev => ({...prev, id_ubicacion: ubicacionesData[0].id_ubicacion}));
       }
     } catch (err) {
@@ -89,6 +97,24 @@ function Sesiones() {
         setNuevaUbicacion({ nombre: '', direccion: '' });
     } catch (err) {
         alert(err.message);
+    }
+  };
+
+  // --- AÑADIDO: Función para confirmar la eliminación ---
+  const handleConfirmDelete = async () => {
+    if (!modalDelete.sesion) return;
+    try {
+      setError('');
+      const response = await fetch(`${API_URL}/api/sesiones/${modalDelete.sesion.id_sesion}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('No se pudo eliminar la sesión.');
+      }
+      setModalDelete({ isOpen: false, sesion: null });
+      fetchData(); // Refresca la lista de sesiones
+    } catch (err) {
+      setError(err.message);
     }
   };
 
@@ -154,9 +180,20 @@ function Sesiones() {
                             <td>{sesion.ubicacion || 'N/D'}</td>
                             <td>{new Date(sesion.fecha_hora).toLocaleString('es-GT')}</td>
                             <td style={{textAlign: 'center'}}>
-                                <Link to={`/sesiones/${sesion.id_sesion}/asistencia`}>
-                                    <button className="action-button">Asistencia</button>
-                                </Link>
+                                {/* --- MODIFICADO: Contenedor de acciones --- */}
+                                <div className="acciones-cell" style={{justifyContent: 'center'}}>
+                                    <Link to={`/sesiones/${sesion.id_sesion}/asistencia`}>
+                                        <button className="action-button">Asistencia</button>
+                                    </Link>
+                                    {user.rol === 'Administrador' && (
+                                        <button 
+                                            onClick={() => setModalDelete({ isOpen: true, sesion: sesion })}
+                                            className="action-icon-button danger"
+                                            title="Eliminar Sesión">
+                                            <FaTrash />
+                                        </button>
+                                    )}
+                                </div>
                             </td>
                         </tr>
                     ))}
@@ -165,13 +202,13 @@ function Sesiones() {
         </div>
       </div>
 
+      {/* Modal de Ubicación (sin cambios) */}
       <Modal 
         isOpen={isUbicacionModalOpen} 
         onClose={() => setIsUbicacionModalOpen(false)}
         title="Crear Nueva Ubicación"
       >
         <form onSubmit={handleGuardarUbicacion} className="modal-form">
-            {/* === INICIO DE LA CORRECCIÓN === */}
             <div className="input-group">
                 <FaMapMarkerAlt className="input-icon" />
                 <input 
@@ -191,13 +228,29 @@ function Sesiones() {
                     onChange={(e) => setNuevaUbicacion(u => ({...u, direccion: e.target.value}))}
                 />
             </div>
-            {/* === FIN DE LA CORRECCIÓN === */}
             <div className="modal-actions">
                 <button type="button" onClick={() => setIsUbicacionModalOpen(false)} className="button-secondary"><span>Cancelar</span></button>
                 <button type="submit"><span>Guardar Ubicación</span></button>
             </div>
         </form>
       </Modal>
+
+      {/* --- AÑADIDO: Modal de confirmación de borrado --- */}
+      <Modal 
+        isOpen={modalDelete.isOpen} 
+        onClose={() => setModalDelete({ isOpen: false, sesion: null })}
+        title="Confirmar Eliminación"
+      >
+        <p>¿Estás seguro de que quieres eliminar la sesión "<strong>{modalDelete.sesion?.tema}</strong>"?</p>
+        <p style={{color: 'var(--error-color)', fontWeight: 'bold'}}>
+          Esta acción no se puede deshacer y borrará todos los registros de asistencia asociados a ella.
+        </p>
+        <div className="modal-actions">
+            <button onClick={() => setModalDelete({ isOpen: false, sesion: null })} className="button-secondary"><span>Cancelar</span></button>
+            <button onClick={handleConfirmDelete} className="button-danger"><span>Sí, eliminar</span></button>
+        </div>
+      </Modal>
+
     </div>
   );
 }

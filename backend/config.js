@@ -14,5 +14,5 @@ module.exports = {
 
   JWT_SECRET: process.env.JWT_SECRET || 'local-secret-key-for-jwt',
   // Reemplaza la clave incorrecta por esta:
-  ENCRYPTION_KEY: process.env.ENCRYPTION_KEY || '1234567890abcdef1234567890abcdef'
+  ENCRYPTION_KEY: process.env.ENCRYPTION_KEY || '12345678jsfklashflkasfh90abcdef1234567890abcdef'
 };
