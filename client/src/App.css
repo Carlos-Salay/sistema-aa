@@ -1363,3 +1363,15 @@ button:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0, 123, 
     grid-template-columns: 3fr 2fr;
   }
 }
+
+
+/* === COLORES PARA MEDALLAS DE LOGRO === */
+.logro-icon.logro-oro {
+  color: #ffd700; /* Color Oro */
+}
+.logro-icon.logro-plata {
+  color: #c0c0c0; /* Color Plata */
+}
+.logro-icon.logro-bronce {
+  color: #cd7f32; /* Color Bronce */
+}

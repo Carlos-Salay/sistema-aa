@@ -11,6 +11,36 @@ const passwordRequirements = [
   { id: 2, text: "Al menos un número", regex: /\d/ }
 ];
 
+// Esta función convierte un número total de días en un formato legible
+function formatearTiempoSobriedad(totalDias) {
+  if (totalDias === null || totalDias === undefined) return 'N/A';
+  
+  const dias = Math.floor(totalDias);
+  
+  if (dias < 0) return 'N/A';
+  if (dias === 0) return '0 días';
+
+  const anios = Math.floor(dias / 365.25);
+  const diasRestantes = dias % 365.25;
+  const meses = Math.floor(diasRestantes / 30.44); // Promedio de días al mes
+
+  let partes = [];
+  if (anios > 0) {
+    partes.push(anios === 1 ? '1 año' : `${anios} años`);
+  }
+  if (meses > 0) {
+    partes.push(meses === 1 ? '1 mes' : `${meses} meses`);
+  }
+
+  // Si es menos de 1 mes, mostrar solo los días
+  if (anios === 0 && meses === 0) {
+    return dias === 1 ? '1 día' : `${dias} días`;
+  }
+  
+  return partes.join(' y ');
+}
+
+
 // Lista corta de nombres de los Pasos
 const nombrePasos = {
     1: "Paso 1: Rendición", 2: "Paso 2: Fe", 3: "Paso 3: Entrega",
@@ -158,12 +188,22 @@ function Miembros() {
     } catch (err) { alert("No se pudo registrar la recaída."); }
   };
   
-  const renderLogro = (dias) => {
-    if (dias === null || dias < 15) return null;
-    if (dias >= 365) return <span title="1 Año o más" className="logro-icon"><FaAward /></span>;
-    if (dias >= 15) return <span title="15 Días" className="logro-icon"><FaAward /></span>;
-    return null;
-  };
+    const renderLogro = (dias) => {
+      if (dias === null || dias < 15) return null;
+
+    const diasNum = Math.floor(dias);
+
+      if (diasNum >= 60) {
+    return <span title="60 Días o más" className="logro-icon logro-oro"><FaAward /></span>;
+      }
+      if (diasNum >= 30) {
+      return <span title="30 Días" className="logro-icon logro-plata"><FaAward /></span>;
+      }
+      if (diasNum >= 15) {
+     return <span title="15 Días" className="logro-icon logro-bronce"><FaAward /></span>;
+      }
+      return null;
+      };
 
   if (loading) return <p>Cargando miembros...</p>;
   if (error) return <p className="message-error">Error: {error}</p>;
@@ -201,7 +241,7 @@ function Miembros() {
                   <td>{miembro.alias}</td>
                   <td>{miembro.codigo_confidencial}</td>
                   <td>{miembro.nombre_padrino || <span className="text-secondary">No asignado</span>}</td>
-                  <td className="dias-sobriedad">{miembro.dias_sobriedad !== null ? `${Math.floor(miembro.dias_sobriedad)} días` : 'N/A'}</td>
+                  <td className="dias-sobriedad">{formatearTiempoSobriedad(miembro.dias_sobriedad)}</td>
                   <td>
                     <div className="select-group paso-select-group">
                       <select className="paso-select" value={miembro.paso_actual || 1} onChange={(e) => handlePasoChange(miembro.id_miembro, e.target.value)}>

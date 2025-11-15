@@ -4,6 +4,35 @@ import { useAuth } from '../context/AuthContext.jsx'; // Asegúrate de que la ex
 import { FaUserCircle, FaAward, FaBook, FaUsers, FaUserFriends, FaCommentDots } from 'react-icons/fa';
 import { API_URL } from '../config.js';
 
+// Esta función convierte un número total de días en un formato legible
+function formatearTiempoSobriedad(totalDias) {
+  if (totalDias === null || totalDias === undefined) return 'N/A';
+  
+  const dias = Math.floor(totalDias);
+  
+  if (dias < 0) return 'N/A';
+  if (dias === 0) return '0 días';
+
+  const anios = Math.floor(dias / 365.25);
+  const diasRestantes = dias % 365.25;
+  const meses = Math.floor(diasRestantes / 30.44); // Promedio de días al mes
+
+  let partes = [];
+  if (anios > 0) {
+    partes.push(anios === 1 ? '1 año' : `${anios} años`);
+  }
+  if (meses > 0) {
+    partes.push(meses === 1 ? '1 mes' : `${meses} meses`);
+  }
+
+  // Si es menos de 1 mes, mostrar solo los días
+  if (anios === 0 && meses === 0) {
+    return dias === 1 ? '1 día' : `${dias} días`;
+  }
+  
+  return partes.join(' y ');
+}
+
 // Traemos las descripciones de los pasos para usarlas aquí
 const descripcionPasos = {
     1: "Admitir: la impotencia ante el alcohol y la vida ingobernable.",
@@ -57,7 +86,7 @@ function MemberDashboard() {
         <div className="card">
           <div className="card-header"><FaAward /> Días de Sobriedad</div>
           <div className="card-body">
-            <span className="card-value">{perfil.dias_sobriedad !== null ? Math.floor(perfil.dias_sobriedad) : 'N/A'}</span>
+            <span className="card-value">{formatearTiempoSobriedad(perfil.dias_sobriedad)}</span>
           </div>
         </div>
         <div className="card">
