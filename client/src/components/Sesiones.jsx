@@ -176,13 +176,13 @@ function Sesiones() {
                             <td>{sesion.tema}</td>
                             <td>{sesion.ubicacion || 'N/D'}</td>
                             
-                            {/* --- LÍNEA CORREGIDA ---
-                                 Le decimos a JS que formatee la fecha UTC que recibe
-                                 usando la zona horaria 'America/Guatemala'.
+                            {/* === LÍNEA CORREGIDA ===
+                                 Usamos hour12: false para forzar el formato 24 horas y
+                                 eliminar la confusión de AM/PM.
                             */}
                             <td>{new Date(sesion.fecha_hora).toLocaleString('es-GT', {
                                 day: '2-digit', month: '2-digit', year: 'numeric',
-                                hour: '2-digit', minute: '2-digit', hour12: true,
+                                hour: '2-digit', minute: '2-digit', hour12: false,
                                 timeZone: 'America/Guatemala' 
                             })}</td>
                             

@@ -50,7 +50,6 @@ router.post('/', async (req, res) => {
     await client.query('BEGIN');
 
     // 1. Insertamos la nueva sesión
-    // === ¡AQUÍ ESTÁ LA CORRECCIÓN CLAVE! ===
     // Le decimos a PostgreSQL: "Toma esta hora ($2) e interprétala como si estuviera 
     // en la zona horaria 'America/Guatemala', luego guárdala correctamente en UTC".
     const result = await client.query(
@@ -98,6 +97,8 @@ router.post('/', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
+    // Gracias al 'ON DELETE CASCADE' en la BD,
+    // al eliminar la sesión, se borrarán las asistencias asociadas.
     const result = await pool.query('DELETE FROM sesiones WHERE id_sesion = $1 RETURNING *', [id]);
     
     if (result.rowCount === 0) {
