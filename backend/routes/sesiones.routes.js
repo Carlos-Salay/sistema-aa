@@ -50,11 +50,12 @@ router.post('/', async (req, res) => {
     await client.query('BEGIN');
 
     // 1. Insertamos la nueva sesión
-    // === ESTA ES LA LÍNEA CORREGIDA ===
-    // Le decimos a PostgreSQL: "Toma esta hora ($2) e interprétala como si estuviera en 'America/Guatemala',
-    // luego guárdala correctamente en UTC (timestamp with time zone)".
+    // === ¡AQUÍ ESTÁ LA CORRECCIÓN CLAVE! ===
+    // Le decimos a PostgreSQL: "Toma esta hora ($2) e interprétala como si estuviera 
+    // en la zona horaria 'America/Guatemala', luego guárdala correctamente en UTC".
     const result = await client.query(
-      'INSERT INTO sesiones (tema, fecha_hora, descripcion, id_ubicacion, id_estado) VALUES ($1, $2 AT TIME ZONE \'America/Guatemala\', $3, $4, 1) RETURNING *',
+      `INSERT INTO sesiones (tema, fecha_hora, descripcion, id_ubicacion, id_estado) 
+       VALUES ($1, $2 AT TIME ZONE 'America/Guatemala', $3, $4, 1) RETURNING *`,
       [tema, fecha_hora, descripcion || null, id_ubicacion || null]
     );
     const nuevaSesion = result.rows[0];

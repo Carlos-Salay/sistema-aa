@@ -176,13 +176,14 @@ function Sesiones() {
                             <td>{sesion.tema}</td>
                             <td>{sesion.ubicacion || 'N/D'}</td>
                             
-                            {/* --- LÍNEA MODIFICADA ---
-                                 Volvemos a usar toLocaleString, que ahora funcionará 
-                                 correctamente gracias al cambio en el backend. 
+                            {/* --- LÍNEA CORREGIDA ---
+                                 Le decimos a JS que formatee la fecha UTC que recibe
+                                 usando la zona horaria 'America/Guatemala'.
                             */}
                             <td>{new Date(sesion.fecha_hora).toLocaleString('es-GT', {
                                 day: '2-digit', month: '2-digit', year: 'numeric',
-                                hour: '2-digit', minute: '2-digit', hour12: true
+                                hour: '2-digit', minute: '2-digit', hour12: true,
+                                timeZone: 'America/Guatemala' 
                             })}</td>
                             
                             <td style={{textAlign: 'center'}}>
