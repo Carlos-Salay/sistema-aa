@@ -36,7 +36,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// RUTA PARA CREAR UNA NUEVA SESIÓN (CON NOTIFICACIONES)
+// RUTA PARA CREAR UNA NUEVA SESIÓN (CON NOTIFICACIONES Y CORRECCIÓN DE ZONA HORARIA)
 router.post('/', async (req, res) => {
   const { tema, fecha_hora, descripcion, id_ubicacion } = req.body;
 
@@ -50,23 +50,27 @@ router.post('/', async (req, res) => {
     await client.query('BEGIN');
 
     // 1. Insertamos la nueva sesión
+    // === ESTA ES LA LÍNEA CORREGIDA ===
+    // Le decimos a PostgreSQL: "Toma esta hora ($2) e interprétala como si estuviera en 'America/Guatemala',
+    // luego guárdala correctamente en UTC (timestamp with time zone)".
     const result = await client.query(
-      'INSERT INTO sesiones (tema, fecha_hora, descripcion, id_ubicacion, id_estado) VALUES ($1, $2, $3, $4, 1) RETURNING *',
+      'INSERT INTO sesiones (tema, fecha_hora, descripcion, id_ubicacion, id_estado) VALUES ($1, $2 AT TIME ZONE \'America/Guatemala\', $3, $4, 1) RETURNING *',
       [tema, fecha_hora, descripcion || null, id_ubicacion || null]
     );
     const nuevaSesion = result.rows[0];
-
-    // --- INICIO DE LA LÓGICA DE NOTIFICACIONES ---
     
     // 2. Obtenemos la lista de todos los miembros activos
     const miembrosActivosRes = await client.query('SELECT id_miembro FROM miembros WHERE id_estado = 1');
     const miembrosActivos = miembrosActivosRes.rows;
 
     if (miembrosActivos.length > 0) {
-        // 3. Preparamos el mensaje y el enlace de la notificación
-        const fechaFormateada = new Date(fecha_hora).toLocaleDateString('es-GT', { day: '2-digit', month: 'long', year: 'numeric' });
+        // 3. Preparamos el mensaje de notificación
+        // Usamos la fecha que la BD guardó (nuevaSesion.fecha_hora) que ya es un objeto Date correcto
+        const fechaFormateada = new Date(nuevaSesion.fecha_hora).toLocaleDateString('es-GT', { 
+            day: '2-digit', month: 'long', year: 'numeric', timeZone: 'America/Guatemala' 
+        });
         const mensaje = `Nueva sesión "${tema}" programada para el ${fechaFormateada}.`;
-        const enlace = '/calendario'; // El enlace llevará al calendario
+        const enlace = '/calendario';
 
         // 4. Creamos una notificación para cada miembro activo
         for (const miembro of miembrosActivos) {
@@ -77,9 +81,6 @@ router.post('/', async (req, res) => {
         }
     }
     
-    // --- FIN DE LA LÓGICA DE NOTIFICACIONES ---
-
-    // 5. Si todo salió bien, confirmamos los cambios
     await client.query('COMMIT');
     res.status(201).json(nuevaSesion);
 
@@ -96,8 +97,6 @@ router.post('/', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    // Gracias al 'ON DELETE CASCADE' en la BD,
-    // al eliminar la sesión, se borrarán las asistencias asociadas.
     const result = await pool.query('DELETE FROM sesiones WHERE id_sesion = $1 RETURNING *', [id]);
     
     if (result.rowCount === 0) {

@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { API_URL } from '../config.js';
-import { useAuth } from '../context/AuthContext.jsx'; // <-- AÑADIDO
+import { useAuth } from '../context/AuthContext.jsx';
 import { 
     FaCalendarPlus, FaListAlt, FaBook, FaCalendarAlt, FaMapMarkerAlt, 
-    FaAlignLeft, FaChevronDown, FaPlus, FaMapMarkedAlt, FaTrash // <-- AÑADIDO FaTrash
+    FaAlignLeft, FaChevronDown, FaPlus, FaMapMarkedAlt, FaTrash
 } from 'react-icons/fa';
 import Modal from './Modal.jsx';
 
 function Sesiones() {
-  const { user } = useAuth(); // <-- AÑADIDO: Para saber el rol del usuario
+  const { user } = useAuth();
   const [sesiones, setSesiones] = useState([]);
   const [ubicaciones, setUbicaciones] = useState([]);
   const [formData, setFormData] = useState({
@@ -23,8 +23,6 @@ function Sesiones() {
   
   const [isUbicacionModalOpen, setIsUbicacionModalOpen] = useState(false);
   const [nuevaUbicacion, setNuevaUbicacion] = useState({ nombre: '', direccion: '' });
-
-  // --- AÑADIDO: Estado para el modal de eliminación ---
   const [modalDelete, setModalDelete] = useState({ isOpen: false, sesion: null });
 
   const fetchData = async () => {
@@ -100,7 +98,6 @@ function Sesiones() {
     }
   };
 
-  // --- AÑADIDO: Función para confirmar la eliminación ---
   const handleConfirmDelete = async () => {
     if (!modalDelete.sesion) return;
     try {
@@ -112,7 +109,7 @@ function Sesiones() {
         throw new Error('No se pudo eliminar la sesión.');
       }
       setModalDelete({ isOpen: false, sesion: null });
-      fetchData(); // Refresca la lista de sesiones
+      fetchData(); 
     } catch (err) {
       setError(err.message);
     }
@@ -178,9 +175,17 @@ function Sesiones() {
                         <tr key={sesion.id_sesion}>
                             <td>{sesion.tema}</td>
                             <td>{sesion.ubicacion || 'N/D'}</td>
-                            <td>{new Date(sesion.fecha_hora).toLocaleString('es-GT')}</td>
+                            
+                            {/* --- LÍNEA MODIFICADA ---
+                                 Volvemos a usar toLocaleString, que ahora funcionará 
+                                 correctamente gracias al cambio en el backend. 
+                            */}
+                            <td>{new Date(sesion.fecha_hora).toLocaleString('es-GT', {
+                                day: '2-digit', month: '2-digit', year: 'numeric',
+                                hour: '2-digit', minute: '2-digit', hour12: true
+                            })}</td>
+                            
                             <td style={{textAlign: 'center'}}>
-                                {/* --- MODIFICADO: Contenedor de acciones --- */}
                                 <div className="acciones-cell" style={{justifyContent: 'center'}}>
                                     <Link to={`/sesiones/${sesion.id_sesion}/asistencia`}>
                                         <button className="action-button">Asistencia</button>
@@ -202,7 +207,6 @@ function Sesiones() {
         </div>
       </div>
 
-      {/* Modal de Ubicación (sin cambios) */}
       <Modal 
         isOpen={isUbicacionModalOpen} 
         onClose={() => setIsUbicacionModalOpen(false)}
@@ -235,7 +239,6 @@ function Sesiones() {
         </form>
       </Modal>
 
-      {/* --- AÑADIDO: Modal de confirmación de borrado --- */}
       <Modal 
         isOpen={modalDelete.isOpen} 
         onClose={() => setModalDelete({ isOpen: false, sesion: null })}
