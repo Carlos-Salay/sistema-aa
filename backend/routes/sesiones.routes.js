@@ -8,7 +8,11 @@ const router = Router();
 router.get('/', async (req, res) => {
   try {
     const query = `
-      SELECT s.id_sesion, s.tema, s.descripcion, u.nombre AS ubicacion, s.fecha_hora 
+      SELECT 
+        s.id_sesion, s.tema, s.descripcion, 
+        u.nombre AS ubicacion, 
+        u.direccion, 
+        s.fecha_hora 
       FROM sesiones s
       LEFT JOIN ubicaciones u ON s.id_ubicacion = u.id_ubicacion
       ORDER BY s.fecha_hora DESC
@@ -65,7 +69,6 @@ router.post('/', async (req, res) => {
 
     if (miembrosActivos.length > 0) {
         // 3. Preparamos el mensaje de notificación
-        // Usamos la fecha que la BD guardó (nuevaSesion.fecha_hora) que ya es un objeto Date correcto
         const fechaFormateada = new Date(nuevaSesion.fecha_hora).toLocaleDateString('es-GT', { 
             day: '2-digit', month: 'long', year: 'numeric', timeZone: 'America/Guatemala' 
         });
@@ -97,8 +100,6 @@ router.post('/', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    // Gracias al 'ON DELETE CASCADE' en la BD,
-    // al eliminar la sesión, se borrarán las asistencias asociadas.
     const result = await pool.query('DELETE FROM sesiones WHERE id_sesion = $1 RETURNING *', [id]);
     
     if (result.rowCount === 0) {

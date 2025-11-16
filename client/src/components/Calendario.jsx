@@ -13,7 +13,8 @@ function Calendario() {
   useEffect(() => {
     const fetchSesiones = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/sesiones`);
+        // Modificamos la consulta para obtener también la dirección
+        const response = await fetch(`${API_URL}/api/sesiones`); 
         if (!response.ok) throw new Error('No se pudieron cargar las sesiones.');
         const data = await response.json();
         const formattedSesiones = data.map(s => ({...s, fecha_hora: new Date(s.fecha_hora)}));
@@ -115,7 +116,9 @@ function Calendario() {
                 sessionsForSelectedDay.map(sesion => (
                   <div key={sesion.id_sesion} className="agenda-item" onClick={() => setSelectedSession(sesion)}>
                     <div className="agenda-item-time">
-                      {sesion.fecha_hora.toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit' })}
+                      {sesion.fecha_hora.toLocaleTimeString('es-GT', { 
+                          hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/Guatemala' 
+                      })}
                     </div>
                     <div className="agenda-item-details">
                       <div className="agenda-item-title">{sesion.tema}</div>
@@ -141,9 +144,13 @@ function Calendario() {
       >
         {selectedSession && (
           <div style={{textAlign: 'left'}}>
-            <p><strong>Fecha:</strong> {new Date(selectedSession.fecha_hora).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-            <p><strong>Hora:</strong> {new Date(selectedSession.fecha_hora).toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit' })}</p>
+            <p><strong>Fecha:</strong> {new Date(selectedSession.fecha_hora).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Guatemala' })}</p>
+            <p><strong>Hora:</strong> {new Date(selectedSession.fecha_hora).toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/Guatemala' })}</p>
             <p><strong>Ubicación:</strong> {selectedSession.ubicacion || 'No especificada'}</p>
+            
+            {/* --- LÍNEA AÑADIDA --- */}
+            {selectedSession.direccion && <p><strong>Dirección:</strong> {selectedSession.direccion}</p>}
+            
             <p><strong>Descripción:</strong> {selectedSession.descripcion || 'Sin descripción.'}</p>
           </div>
         )}

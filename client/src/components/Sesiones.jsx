@@ -174,18 +174,15 @@ function Sesiones() {
                     {sesiones.map((sesion) => (
                         <tr key={sesion.id_sesion}>
                             <td>{sesion.tema}</td>
-                            <td>{sesion.ubicacion || 'N/D'}</td>
-                            
-                            {/* === LÍNEA CORREGIDA ===
-                                 Usamos hour12: false para forzar el formato 24 horas y
-                                 eliminar la confusión de AM/PM.
-                            */}
+                            <td>
+                              {sesion.ubicacion || 'N/D'}
+                              {sesion.direccion && <small style={{display: 'block', color: 'var(--text-secondary)'}}>{sesion.direccion}</small>}
+                            </td>
                             <td>{new Date(sesion.fecha_hora).toLocaleString('es-GT', {
                                 day: '2-digit', month: '2-digit', year: 'numeric',
                                 hour: '2-digit', minute: '2-digit', hour12: false,
                                 timeZone: 'America/Guatemala' 
                             })}</td>
-                            
                             <td style={{textAlign: 'center'}}>
                                 <div className="acciones-cell" style={{justifyContent: 'center'}}>
                                     <Link to={`/sesiones/${sesion.id_sesion}/asistencia`}>
